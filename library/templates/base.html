@@ -1,0 +1,40 @@
+<!-- base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Título Padrão{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://kit.fontawesome.com/abb211c046.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="main-title mt-3"><a href="{% url 'index' %}">The Secret Library</a></h1>
+            <img title="Obra de Gerhard Altzenbach" src="{% static 'images/avatar.jpg' %}" class="avatar img-thumbnail">
+        </header>
+
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <footer>
+            <div class="icons">
+                <a class="media-icon" href="https://github.com/the-akira" target="_blank">
+                    <i class="fab fa-github fa-2x"></i>
+                </a>
+                <a class="media-icon" href="https://cc33z.pythonanywhere.com" target="_blank">
+                    <i class="fas fa-globe fa-2x"></i>
+                </a>         
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

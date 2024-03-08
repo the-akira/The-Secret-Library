@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalhes do Livro: {{ livro.titulo }}{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success mt-3" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="btns mt-4 mb-4">
+    <a type="button" class="pagina-livros mr-2" href="{% url 'livros' %}">Livros</a>
+    {% if livro.usuario.username == request.user.username %}
+        <a type="button" class="mr-2 editar-livro" href="{% url 'editar_livro' livro.id %}">Editar</a>
+        <a type="button" class="excluir-livro" id="excluir-livro" data-livro-id="{{ livro.id }}" data-livro-titulo="{{ livro.titulo }}">
+            Excluir
+        </a>
+    {% else %}
+    {% endif %}
+</div>
+
+<div class="livro-div mb-3">
+    <h1 class="text-default mb-4">{{ livro.titulo }}</h1>
+    {% if livro.capa %}
+        <img class="livro-picture img-thumbnail" src="{{ livro.capa.url }}" alt="{{ livro.titulo }}">
+    {% endif %}
+    <p class="author-text">Autor: {{ livro.autor.nome }}</p>
+    <p class="author-text">Editora: {{ livro.editora.nome }}</p>
+    <p class="author-text">Categoria: {{ livro.categoria.nome }}</p>
+    <p class="author-text">Sinopse: {{ livro.sinopse }}</p>
+    <p class="author-text">Data de Publicação: {{ livro.data_publicacao }}</p>
+    <p class="author-text">ISBN: {{ livro.isbn }}</p>
+    {% if livro.link %}
+        <p class="author-text">Download: <a href="{{ livro.link }}">Link</a></p>
+    {% endif %}
+    <p class="author-text mb-0"><b>Postador por:</b> <a href="{% url 'detalhes_usuario' livro.usuario.id %}">{{ livro.usuario }}</a></p>
+</div>    
+
+<h2 class="text-default">Adicionar Comentário</h2>
+<div class="adicionar-comentario-div mt-3 mb-3">
+    <form id="comentario-form" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button id="submit-btn" class="mt-0" type="submit">Salvar</button>
+    </form>
+</div>
+
+<h2 class="text-default mb-3">Comentários do Livro ({{ total_comentarios }})</h2>
+{% for comentario in comentarios_pagina %}
+<div class="comentario-div mb-3">
+    {% if comentario.usuario.username == request.user.username %}
+        <a class="editar-comentario mr-2" type="button" href="{% url 'editar_comentario' comentario.id livro.id %}">Editar</a>
+        <a class="excluir-comentario" type="button" id="excluir-comentario" data-livro-id="{{ livro.id }}" data-comentario-id="{{ comentario.id }}">
+            Excluir
+        </a>
+    {% else %}
+    {% endif %}
+    <p class="comentario-texto {% if comentario.usuario.username == request.user.username %} mt-3 {% endif %}"><b>Usuário:</b> <a href="{% url 'detalhes_usuario' livro.usuario.id %}">{{ comentario.usuario.username }}</a></p>
+    <p class="comentario-texto"><b>Data de Publicação:</b> {{ comentario.data_publicacao }}</p>
+    <p class="comentario-texto mb-0"><b>Texto:</b> {{ comentario.texto }}</p>
+</div>
+{% empty %}
+    <p>Ainda não há comentários para este livro.</p>
+{% endfor %}
+
+<p>Página {{ comentarios_pagina.number }} de {{ comentarios_pagina.paginator.num_pages }}.</p>
+<div class="paginacao">
+    {% if comentarios_pagina.has_previous %}
+        <a href="?page=1">&laquo; Primeira</a>
+        <a href="?page={{ comentarios_pagina.previous_page_number }}">Anterior</a>
+    {% endif %}
+
+    {% for num in comentarios_pagina.paginator.page_range %}
+        {% if num == comentarios_pagina.number %}
+            <span class="current">{{ num }}</span>
+        {% elif num > comentarios_pagina.number|add:'-3' and num < comentarios_pagina.number|add:'3' %}  
+            <a href="?page={{ num }}">{{ num }}</a>     
+        {% endif %}
+    {% endfor %}
+
+    {% if comentarios_pagina.has_next %}
+        <a href="?page={{ comentarios_pagina.next_page_number }}">Próxima</a>
+        <a href="?page={{ comentarios_pagina.paginator.num_pages }}">Última &raquo;</a>
+    {% endif %}
+</div>
+
+{% include '_modal_excluir_livro.html' %} 
+{% include '_modal_excluir_comentario.html' %} 
+
+<script type="text/javascript">
+$('#comentario-form').submit(function() {
+  $('#submit-btn').prop('disabled', true); // Desabilitar o botão
+
+  setTimeout(function() {
+      $('#submit-btn').prop('disabled', false); // Reabilitar o botão
+  }, 3000);
+});
+
+$('label[for="id_texto"]').text('Digite seu Comentário');
+</script>
+<script src="{% static 'js/modal_excluir_livro.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/modal_excluir_comentario.js' %}" type="text/javascript"></script>
+{% endblock %}

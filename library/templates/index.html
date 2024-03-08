@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}The Secret Library{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success mt-3" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+<h2 class="welcome">Seja bem-vindo {{ user }}!</h2>
+
+<div class="mb-4">
+	{% if request.user.is_authenticated %}
+		<a class="main-link" href="{% url 'autores' %}">Autores</a>
+		<a class="main-link mt-3" href="{% url 'livros' %}">Livros</a>
+		<a class="main-link mt-3" href="{% url 'editoras' %}">Editoras</a>
+		<a class="main-link mt-3" href="{% url 'painel_controle' %}">Painel de Controle</a>
+		<a class="main-link mt-3" href="{% url 'logout' %}">Logout</a>
+	{% else %}
+		<a class="main-link mt-3" href="{% url 'login' %}">Login</a>
+		<a class="main-link mt-3" href="{% url 'registrar' %}">Registrar</a>
+	{% endif %}
+</div>
+{% endblock %}

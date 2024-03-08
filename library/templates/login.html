@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success mt-3" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+<h1 class="text-default mt-4 mb-4">Login</h1>
+
+<div class="editar-livro-div">
+  <form id="editar-livro-form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div id="fileInfo" class="mb-2"></div>
+      <button id="submit-btn" type="submit">Entrar</button>
+      <a href="{% url 'index' %}" id="cancel-btn" type="submit">Cancelar</a>
+  </form>
+</div>
+<br>
+{% endblock %}

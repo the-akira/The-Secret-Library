@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Adicionar Autor{% endblock %}
+
+{% block content %}
+<h1 class="text-default mt-4 mb-4">Adicionar Autor</h1>
+
+<div class="adicionar-autor-div">
+  <form id="autor-form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div id="fileInfo" class="mb-2"></div>
+      <button id="submit-btn" type="submit">Salvar</button>
+  </form>
+</div>
+<br>
+
+<script>
+$(function() {
+  $('#id_data_nascimento').datepicker({
+    dateFormat: 'dd-mm-yy', // Formato da data
+    changeMonth: true, // Permitir alteração do mês
+    changeYear: true, // Permitir alteração do ano
+    yearRange: '1900:2025' // Intervalo de anos permitidos
+  });
+
+  $('#autor-form').submit(function() {
+    $('#submit-btn').prop('disabled', true); // Desabilitar o botão
+
+    setTimeout(function() {
+        $('#submit-btn').prop('disabled', false); // Reabilitar o botão
+    }, 3000);
+  });
+
+  $('label[for="id_nome"]').text('Nome');
+  $('label[for="id_biografia"]').text('Biografia');
+  $('label[for="id_data_nascimento"]').text('Data de Nascimento');
+  $('label[for="id_foto"]').text('Selecione a Foto');
+
+  document.getElementById('id_foto').addEventListener('change', function(event) {
+      // Obtém o arquivo selecionado pelo usuário
+      var file = event.target.files[0];
+
+      // Verifica se um arquivo foi selecionado
+      if (file) {
+          // Calcula o tamanho do arquivo em kilobytes (KB)
+          var fileSizeKB = file.size / 1024;
+
+          // Exibe o nome do arquivo e o seu tamanho em KB
+          var fileInfo = '<b>Nome do arquivo:</b> ' + file.name + '<br>' +
+                         '<b>Tamanho do arquivo:</b> ' + fileSizeKB.toFixed(2) + ' KB';
+
+          // Exibe as informações do arquivo em um elemento HTML
+          document.getElementById('fileInfo').innerHTML = fileInfo;
+      } else {
+          // Se nenhum arquivo foi selecionado, limpa as informações
+          document.getElementById('fileInfo').innerHTML = 'Nenhum arquivo selecionado';
+      }
+  });
+});
+</script>
+{% endblock %}

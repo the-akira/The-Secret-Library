@@ -1,0 +1,529 @@
+@import url('https://fonts.googleapis.com/css2?family=Luxurious+Roman&display=swap');
+
+body {
+  background-image: url(/static/images/dark.png);
+}
+
+a {
+  text-decoration: none !important;
+  color: #908D94 !important;
+}
+
+.container {
+  padding: 20px;
+  margin-top: 20px;
+  background-color: #100109;
+  margin-bottom: 20px;
+  border: 1px solid white;
+  box-shadow: 5px 5px 5px #222222;
+  border-radius: 14px;
+  color: #908D94;
+  text-align: center;
+}
+
+.paginacao {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-top: 15px !important;
+  margin-bottom: 35px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center;
+}
+
+.paginacao > a,
+.paginacao > .current,
+#anterior,
+#proximo,
+#anterior-comentarios,
+#proximo-comentarios,
+#anterior-pensamentos,
+#proximo-pensamentos,
+#anterior-autores,
+#proximo-autores,
+#anterior-editoras,
+#proximo-editoras {
+  text-decoration: none;
+  border: 1px solid white;
+  padding: 7px 10px;
+  color: white;
+  background-color: black;
+  font-size: 1.3rem;
+  margin-right: 10px;
+}
+
+.main-link {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%; 
+  background-color: black; 
+  color: #908D94;
+  font-size: 1.8rem;
+  padding: 15px;
+  border: 1px solid white;
+  border-radius: 10px;
+}
+
+.main-link:hover {
+  color: white !important;
+}
+
+.main-title, 
+.welcome, 
+.autores-title,
+.livros-title {
+  font-family: "Luxurious Roman", serif;
+  margin-top: 30px; 
+  margin-bottom: 30px;
+  font-weight: bold;
+  font-size: 3rem;
+  text-shadow: 1.33px 1.33px 1.33px #ffffff;
+}
+
+.autores-title,
+.livros-title {
+  font-size: 2.5rem;
+  text-shadow: 1.1px 1.1px 1.1px #ffffff; 
+}
+
+.text-default {
+  font-family: "Luxurious Roman", serif;
+  text-shadow: 1px 1px 1px #ffffff;  
+}
+
+.author-name,
+.livro-title {
+  font-size: 2.6rem;
+}
+
+#author-suggestions,
+#livro-suggestions,
+#editora-suggestions,
+#usuario-suggestions {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;  
+}
+
+#author-suggestions > li:first-child,
+#livro-suggestions > li:first-child,
+#editora-suggestions > li:first-child,
+#usuario-suggestions > li:first-child {
+  margin-top: 10px;
+}
+
+#author-suggestions > li,
+#livro-suggestions > li,
+#editora-suggestions > li,
+#usuario-suggestions > li {
+  font-size: 1.7rem;
+  font-family: "Luxurious Roman", serif;
+  text-shadow: 1px 1px 1px #ffffff;   
+}
+
+.autor-picture, 
+.livro-picture {
+  margin-bottom: 15px;
+  width: 350px;
+}
+
+hr {
+  background-color: white;
+  width: 50%;
+}
+
+.editar-autor,
+.editar-livro, 
+.excluir-autor,
+.detalhes-autor,
+.detalhes-livro,
+.novo-autor,
+.novo-livro,
+.excluir-livro,
+.editar-pensamento,
+.excluir-pensamento,
+.pagina-autores,
+.pagina-livros,
+.editar-comentario,
+.excluir-comentario,
+.add-livro-autor,
+.nova-editora,
+.editar-editora,
+.excluir-editora {
+  background: #1d4569;
+  color: white !important;
+  border: 1px solid white;
+  padding: 5px 10px;
+  font-size: 1.2rem;
+}
+
+.excluir-autor,
+.excluir-pensamento,
+.excluir-livro,
+.excluir-comentario,
+.excluir-editora {
+  background-color: #691d25;
+}
+
+.detalhes-autor,
+.detalhes-livro {
+  background-color: #4c1d69;
+}
+
+.novo-autor,
+.novo-livro,
+.nova-editora {
+  background-color: #2c691d;
+}
+
+.add-livro-autor {
+  background-color: #66691d;
+}
+
+.pagina-autores,
+.pagina-livros {
+  background-color: #271d69;
+}
+
+.welcome {
+  margin-top: 30px;
+  font-size: 2.33rem;
+  font-weight: normal;
+  text-shadow: 1px 1px 1px #ffffff;
+}
+
+.autor-div, 
+.livro-div,
+.livros-div,
+.pesquisar-autor-div,
+.pesquisar-livro-div,
+.adicionar-autor-div,
+.editar-autor-div,
+.adicionar-pensamento-div,
+.pensamentos-div,
+.editar-pensamento-div,
+.adicionar-livro-div,
+.editar-livro-div,
+.comentario-div,
+.adicionar-comentario-div,
+.editar-comentario-div,
+.pesquisar-editora-div,
+.adicionar-editora-div,
+.editar-editoar-div,
+.editar-infos-div {
+  padding: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  border: 1px solid #908d94;
+  opacity: 0.8;
+  box-shadow: 5px 6px 6px #222222;
+  border-radius: 10px;
+  background-image: url(/static/images/dark.png);
+}
+
+.autor-div,
+.livro-div,
+.livros-div {
+  margin-top: 20px;
+  padding-top: 30px;
+  padding-bottom: 25px;
+}
+
+.author-text, 
+.pensamento-texto,
+.comentario-texto,
+.livro-text {
+  font-size: 1.35rem;
+  color: #d9d9d9;
+}
+
+.pensamentos-div,
+.livros-div {
+  margin-bottom: 20px;
+}
+
+#search-input,
+#id_nome,
+#id_biografia,
+#id_data_nascimento,
+#id_foto,
+#id_capa,
+#id_texto,
+#id_titulo,
+#id_autor,
+#id_editora,
+#id_categoria,
+#id_sinopse,
+#id_data_publicacao,
+#id_isbn,
+#id_link,
+#id_website,
+#id_username,
+#id_password,
+#id_password1,
+#id_password2,
+#id_bio,
+#id_birth_date,
+#id_avatar,
+#id_email {
+  width: 100%;
+  font-size: 1.35rem;
+  border-radius: 7px;
+  height: 45px;
+  outline: none;
+  border: 2px solid gray;
+  padding-left: 10px;
+}
+
+#id_password1,
+#id_password2 {
+  margin-bottom: 10px;
+}
+
+::-webkit-file-upload-button {
+   display: none;
+}
+
+#id_foto,
+#id_capa,
+#id_avatar {
+  height: 36px;
+  background-color: white;
+}
+
+#id_foto:hover,
+#id_capa:hover,
+#id_avatar:hover {
+  cursor: pointer;
+}
+
+#id_biografia,
+#id_texto,
+#id_sinopse,
+#id_bio {
+  height: 200px;
+  resize: none;
+}
+
+label[for=id_nome],
+label[for=id_biografia],
+label[for=id_data_nascimento],
+label[for=id_foto],
+label[for=id_capa],
+label[for=id_texto],
+label[for=id_titulo],
+label[for=id_autor],
+label[for=id_editora],
+label[for=id_categoria],
+label[for=id_sinopse],
+label[for=id_data_publicacao],
+label[for=id_isbn],
+label[for=id_link],
+label[for="id_website"],
+label[for="id_username"],
+label[for="id_password"],
+label[for="id_password1"],
+label[for="id_password2"],
+label[for="id_birth_date"],
+label[for="id_bio"],
+label[for="id_avatar"],
+label[for="id_email"],
+label[for="id_livro"] {
+  font-size: 1.5rem;
+  font-family: "Luxurious Roman", serif;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px #ffffff;
+}
+
+label[for=id_foto]:hover,
+label[for=id_capa]:hover {
+  cursor: pointer;
+}
+
+#search-input:focus {
+  border: 4px solid gray;
+}
+
+#search-author-btn, 
+#submit-btn, 
+#save-pensamento-button,
+#search-livro-btn,
+#save-comentario-button,
+#search-editora-btn,
+#save-editora-btn,
+#cancel-btn {
+  width: 100%;
+  margin-top: 10px;
+  outline: none;
+  background-color: gray !important;
+  color: white;
+  border: 1px solid white !important;
+  border-radius: 7px;
+  font-size: 1.5rem;
+  padding: 6px 0px;
+}
+
+.ocultar-btn {
+  font-size: 1.3rem;
+  padding: 7px 10px;
+  color: white;
+  background-color: #28074a;
+  border: 1px solid white;
+}
+
+.ocultar-btn:focus {
+  outline: none;
+}
+
+#cancel-btn {
+  background-color: #cc5c3d !important;
+  color: white !important;
+}
+
+#anterior[disabled],
+#proximo[disabled],
+#anterior-comentarios[disabled],
+#proximo-comentarios[disabled],
+#anterior-pensamentos[disabled],
+#proximo-pensamentos[disabled],
+#anterior-autores[disabled],
+#proximo-autores[disabled],
+#anterior-editoras[disabled],
+#proximo-editoras[disabled] {
+  background-color: #290007;
+}
+
+.avatar {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 8px;
+  width: 500px;
+  height: auto;
+  opacity: 0.7 !important;
+  border-radius: 10px !important;
+}
+
+.user-avatar {
+  width: 250px;
+  height: auto;
+}
+
+.icons {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;
+  text-align: center;
+}
+
+.media-icon {
+  margin-right: 14px;
+  color: #908d94;
+}
+
+.media-icon:hover {
+  color: #908d94;
+  opacity: 0.85;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto; 
+  margin-top: 3%;
+  margin-bottom: 3%;
+  padding: 20px;
+  border: 1px solid #888;
+  border: 4px solid #273E74;
+  text-align: center;
+  background-color: #100109 !important;
+  border: 1px solid white !important;
+  box-shadow: 5px 5px 5px #222222 !important;
+  width: 60% !important;
+}
+
+.close, 
+.closePensamento, 
+.closeLivro,
+.closeComentario,
+.closeEditora {
+  line-height: 0 !important;
+  color: white !important;
+  float: right;
+  font-size: 2.2rem !important;
+  font-weight: bold;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+#confirmarExclusaoAutor, 
+#confirmarExclusaoPensamento,
+#confirmarExclusaoLivro,
+#confirmarExclusaoComentario,
+#confirmarExclusaoEditora {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.errorlist {
+  list-style-type: none;
+}
+
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background: black;
+  box-shadow: inset 0 0 15px #908d94;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #100109;
+  border-radius: 0.25rem;
+  border: 2px solid white;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #908d94;
+}
+
+@media only screen and (max-width: 770px) {
+  .paginacao > a, .paginacao > .current {
+    margin-top: 20px;
+  }
+  .avatar {
+    width: 90%;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .avatar {
+    width: 80%;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .main-link {
+    width: 70%;
+    font-size: 1.4rem;
+  }
+}

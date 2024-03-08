@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Editora {{ editora.id }}{% endblock %}
+
+{% block content %}
+<h1 class="text-default mt-4 mb-4">Editar Editora: {{ editora.id }}</h1>
+<div class="editar-editoar-div">
+  <form id="editar-editora-form" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button id="save-editora-btn" type="submit">Salvar Alterações</button>
+      <a href="{% url 'editoras' %}" id="cancel-btn" type="submit">Cancelar</a>
+  </form>
+</div>
+<br>
+
+<script>
+$('#editar-comentario-form').submit(function() {
+    $('##save-editora-btn').prop('disabled', true); // Desabilitar o botão
+
+    setTimeout(function() {
+        $('##save-editora-btn').prop('disabled', false); // Reabilitar o botão
+    }, 3000);
+});
+
+$('label[for="id_texto"]').text('Informe o Novo Comentário');
+</script>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lista de Autores{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success mt-3" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<h1 class="autores-title">Buscar Autor</h1>
+
+<div class="pesquisar-autor-div">
+    <form method="GET" action="{% url 'autores' %}">
+        <img class="mb-2" src="{% static 'images/eye.png' %}">
+        <h2 class="text-default mb-3">Digite o nome do autor</h2>
+        <input id="search-input" type="text" name="q" value="" autocomplete="off" placeholder="Pesquisar...">
+        <button id="search-author-btn" type="submit">Pesquisar</button>
+        {% if query %}
+            <p class="mt-3 mb-1" style="font-size: 1.21rem"><b>Último Termo Pesquisado:</b> {{ query }}</p>
+        {% endif %}
+        <ul id="author-suggestions"></ul>
+    </form>
+</div>
+
+<h1 class="autores-title">Lista de Autores ({{ total }})</h1>
+
+<a type="button" class="mr-2 novo-autor" href="{% url 'adicionar_autor' %}">Adicionar Autor</a>
+
+{% for autor in autores %}
+<div class="autor-div">
+    <a type="button" class="mr-2 add-livro-autor" href="{% url 'adicionar_livro_autor' autor.id %}">Adicionar Livro</a>
+    <a type="button" class="mr-2 detalhes-autor" href="{% url 'detalhes_autor' autor.id %}">Detalhes</a>
+    {% if autor.usuario.username == request.user.username %}
+        <a type="button" class="mr-2 editar-autor" href="{% url 'editar_autor' autor.id %}">Editar</a>
+        <a type="button" class="excluir-autor" id="excluir-autor" data-autor-id="{{ autor.id }}" data-autor-nome="{{ autor.nome }}">
+            Excluir
+        </a>
+    {% else %}
+    {% endif %}
+    <h2 class="text-default author-name mt-4"><a href="{% url 'detalhes_autor' autor.id %}">{{ autor.nome }}</a></h2>
+    <p class="author-text mt-4"><b>Biografia:</b> {{ autor.biografia }}</p>
+    <p class="author-text"><b>Postador por:</b> <a href="{% url 'detalhes_usuario' autor.usuario.id %}">{{ autor.usuario }}</a></p>
+    {% if autor.foto %}
+        <img class="autor-picture img-thumbnail" src="{{ autor.foto.url }}" alt="{{ autor.nome }}">
+    {% endif %}
+    {% if autor.data_nascimento %}
+        <p class="author-text mb-0"><b>Data de Nascimento:</b> {{ autor.data_nascimento|date:"d/m/Y" }} </p>
+    {% endif %}
+</div>
+{% endfor %}
+
+<p class="mt-3">Página {{ autores.number }} de {{ autores.paginator.num_pages }}.</p>
+<div class="paginacao">
+    {% if autores.has_previous %}
+        <a href="?page=1">&laquo; Primeira</a>
+        <a href="?page={{ autores.previous_page_number }}">Anterior</a>
+    {% endif %}
+
+    {% for page_num in autores.paginator.page_range %}
+        {% if page_num == autores.number %}
+            <span class="current">{{ page_num }}</span>
+        {% elif page_num > autores.number|add:'-3' and page_num < autores.number|add:'3' %}  
+            <a href="?page={{ page_num }}">{{ page_num }}</a>     
+        {% endif %}
+    {% endfor %}
+
+    {% if autores.has_next %}
+        <a href="?page={{ autores.next_page_number }}">Próxima</a>
+        <a href="?page={{ autores.paginator.num_pages }}">Última &raquo;</a>
+    {% endif %}
+</div>
+
+{% include '_modal_excluir_autor.html' %} 
+
+<script>
+$(document).ready(function() {
+    $('#search-input').on('input keyup', function(event) {
+        var query = $(this).val().trim();
+
+        if (query !== '') {
+            $.ajax({
+                url: '{% url "buscar_autores" %}',
+                data: {
+                    'query': query
+                },
+                success: function(data) {
+                    $('#author-suggestions').empty();
+
+                    $.each(data.autores, function(index, autor) {
+                        var detalhesUrl = "{% url 'detalhes_autor' autor_id=0 %}".replace('0', autor.id);
+                        $('#author-suggestions').append('<li><a href="' + detalhesUrl + '">' + autor.nome + '</a></li>');
+                    });
+
+                    if (!$('#author-suggestions').is(':empty')) {
+                        $('#author-suggestions').prepend('<li class="mt-2"><b>Sugestão de Autor<b></li>');
+                    }
+                }
+            });
+        } else {
+            $('#author-suggestions').empty();
+        }
+    });
+
+    $('#search-input').on('keydown', function(event) {
+        if (event.key === 'Backspace') {
+            if ($(this).val().trim() === '') {
+                $('#author-suggestions').empty();
+            }
+        }
+    });
+});
+</script>
+<script src="{% static 'js/modal_excluir_autor.js' %}" type="text/javascript"></script>
+{% endblock %}

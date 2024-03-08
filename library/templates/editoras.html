@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lista de Editoras{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success mt-3" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<h1 class="livros-title">Buscar Editora</h1>
+
+<!-- Formulário de pesquisa de editoras -->
+<div class="pesquisar-editora-div">
+    <form method="GET" action="{% url 'editoras' %}">
+        <img class="mb-2" src="{% static 'images/eye.png' %}">
+        <h2 class="text-default mb-3">Digite o nome da editora</h2>
+        <input id="search-input" type="text" name="q" value="" autocomplete="off" placeholder="Pesquisar...">
+        <button id="search-editora-btn" type="submit">Pesquisar</button>
+        {% if query %}
+            <p class="mt-3 mb-1" style="font-size: 1.21rem"><b>Último Termo Pesquisado:</b> {{ query }}</p>
+        {% endif %}
+        <ul id="editora-suggestions"></ul>
+    </form>
+</div>
+
+<!-- Lista de editoras -->
+<h1 class="livros-title">Lista de Editoras ({{ total }})</h1>
+
+<a type="button" class="mr-2 nova-editora" href="{% url 'adicionar_editora' %}">Adicionar Editora</a>
+
+<!-- Iteração sobre as editoras -->
+{% for editora in editoras %}
+<div class="livro-div">
+    {% if editora.usuario.username == request.user.username %}
+        <a type="button" class="mr-2 editar-editora" href="{% url 'editar_editora' editora.id %}">Editar</a>
+        <a type="button" class="excluir-editora" id="excluir-editora" data-editora-id="{{ editora.id }}" data-editora-nome="{{ editora.nome }}">
+            Excluir
+        </a>
+    {% else %}
+    {% endif %}
+    <h2 class="text-default livro-title {% if editora.usuario.username == request.user.username %} mt-4 {% endif %} mb-4">
+        {{ editora.nome }}
+    </h2>
+    {% if editora.website %}
+        <p class="livro-text mt-3 mb-0"><b>Website:</b> <a href="{{ editora.website }}">{{ editora.website }}</a></p>
+    {% endif %}
+    <p class="livro-text mt-3 mb-0"><b>Postador por:</b> <a href="{% url 'detalhes_usuario' editora.usuario.id %}">{{ editora.usuario }}</a></p>
+</div>
+{% endfor %}
+
+<!-- Paginação -->
+<p class="mt-3">Página {{ editoras.number }} de {{ editoras.paginator.num_pages }}.</p>
+<div class="paginacao">
+    {% if editoras.has_previous %}
+        <a href="?page=1">&laquo; Primeira</a>
+        <a href="?page={{ editoras.previous_page_number }}">Anterior</a>
+    {% endif %}
+
+    {% for page_num in editoras.paginator.page_range %}
+        {% if page_num == editoras.number %}
+            <span class="current">{{ page_num }}</span>
+        {% elif page_num > editoras.number|add:'-3' and page_num < editoras.number|add:'3' %}  
+            <a href="?page={{ page_num }}">{{ page_num }}</a>     
+        {% endif %}
+    {% endfor %}
+
+    {% if editoras.has_next %}
+        <a href="?page={{ editoras.next_page_number }}">Próxima</a>
+        <a href="?page={{ editoras.paginator.num_pages }}">Última &raquo;</a>
+    {% endif %}
+</div>
+
+{% include '_modal_excluir_editora.html' %} 
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#search-input').on('input keyup', function(event) {
+        var query = $(this).val().trim();
+
+        if (query !== '') {
+            $.ajax({
+                url: '{% url "buscar_editoras" %}',
+                data: {
+                    'query': query
+                },
+                success: function(data) {
+                    $('#editora-suggestions').empty();
+
+                    $.each(data.editoras, function(index, editora) {
+                        $('#editora-suggestions').append('<li>' + editora.nome + '</li>');
+                    });
+
+                    if (!$('#editora-suggestions').is(':empty')) {
+                        $('#editora-suggestions').prepend('<li class="mt-2"><b>Sugestão de Editora<b></li>');
+                    }
+                }
+            });
+        } else {
+            $('#editora-suggestions').empty();
+        }
+    });
+
+    $('#search-input').on('keydown', function(event) {
+        if (event.key === 'Backspace') {
+            if ($(this).val().trim() === '') {
+                $('#editora-suggestions').empty();
+            }
+        }
+    });
+});
+</script>
+<script src="{% static 'js/modal_excluir_editora.js' %}" type="text/javascript"></script>
+{% endblock %}

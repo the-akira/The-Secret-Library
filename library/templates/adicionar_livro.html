@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Adicionar Livro{% endblock %}
+
+{% block content %}
+<h1 class="text-default mt-4 mb-4">Adicionar Livro</h1>
+
+<div class="adicionar-livro-div">
+  <form id="livro-form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div id="fileInfo" class="mb-2"></div>
+      <button id="submit-btn" type="submit">Salvar</button>
+      <a href="{% url 'livros' %}" id="cancel-btn" type="submit">Cancelar</a>
+  </form>
+</div>
+<br>
+
+<script>
+$(function() {
+  $('#id_data_publicacao').datepicker({
+    dateFormat: 'dd-mm-yy', 
+    changeMonth: true, 
+    changeYear: true, 
+    yearRange: '1900:2025' 
+  });
+
+  $('#livro-form').submit(function() {
+    $('#submit-btn').prop('disabled', true); 
+
+    setTimeout(function() {
+        $('#submit-btn').prop('disabled', false); 
+    }, 3000);
+  });
+
+  $('label[for="id_titulo"]').text('Título');
+  $('label[for="id_sinopse"]').text('Sinopse');
+  $('label[for="id_data_publicacao"]').text('Data de Publicação');
+  $('label[for="id_isbn"]').text('ISBN');
+  $('label[for="id_capa"]').text('Capa');
+  $('label[for="id_link"]').text('Link');
+
+  document.getElementById('id_capa').addEventListener('change', function(event) {
+      var file = event.target.files[0];
+
+      if (file) {
+          var fileSizeKB = file.size / 1024;
+
+          var fileInfo = '<b>Nome do arquivo:</b> ' + file.name + '<br>' +
+                         '<b>Tamanho do arquivo:</b> ' + fileSizeKB.toFixed(2) + ' KB';
+
+          document.getElementById('fileInfo').innerHTML = fileInfo;
+      } else {
+          document.getElementById('fileInfo').innerHTML = 'Nenhum arquivo selecionado';
+      }
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Pensamento {{ pensamento.id }}{% endblock %}
+
+{% block content %}
+<h1 class="text-default mt-4 mb-4">Editar Pensamento: {{ pensamento.id }}</h1>
+<div class="editar-pensamento-div">
+  <form id="editar-pensamento-form" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button id="save-pensamento-button" type="submit">Salvar Alterações</button>
+      <a href="{% url 'detalhes_autor' autor_id %}" id="cancel-btn" type="submit">Cancelar</a>
+  </form>
+</div>
+<br>
+
+<script>
+$('#editar-pensamento-form').submit(function() {
+    $('#save-pensamento-button').prop('disabled', true); // Desabilitar o botão
+
+    setTimeout(function() {
+        $('#save-pensamento-button').prop('disabled', false); // Reabilitar o botão
+    }, 3000);
+});
+
+$('label[for="id_texto"]').text('Informe o Novo Pensamento');
+</script>
+{% endblock %}

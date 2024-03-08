@@ -1,0 +1,475 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Painel de Controle{% endblock %}
+
+{% block content %}
+<h2 class="text-default mt-4 mb-4">Buscar Usuários</h2>
+<button class="ocultar-btn" id="toggleSearchUsuario">Ocultar</button>
+<div class="pesquisar-livro-div mt-4" id="searchUsuario">
+    <img class="mb-2" src="{% static 'images/eye.png' %}">
+    <h2 class="text-default mb-3">Digite um nome</h2>
+    <input id="search-input" type="text" name="q" value="" autocomplete="off" placeholder="Pesquisar...">
+    <ul id="usuario-suggestions"></ul>
+</div>
+
+<h2 class="text-default mt-4 mb-4">Editar Perfil</h2>
+<button class="ocultar-btn" id="toggleEditarPerfil">Ocultar</button>
+<div class="editar-infos-div mt-4 mb-3" id="editarPerfil">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button id="submit-btn" type="submit">Salvar Alterações</button>
+    </form>
+</div>
+
+<h2 class="text-default mt-4 mb-4">Informações do Usuário</h2>
+<button class="ocultar-btn" id="toggleUserInfo">Ocultar</button>
+<div class="editar-infos-div mt-3 mb-3" id="userInfo">
+<p class="livro-text"><strong>Username:</strong><a href="{% url 'detalhes_usuario' request.user.id %}"> {{ request.user.username }}</a></p>
+<p class="livro-text mb-0"><strong>Email:</strong> {{ request.user.email }}</p>
+</div>
+
+<h2 class="text-default mt-4 mb-4">Informações do Perfil</h2>
+<button class="ocultar-btn" id="togglePerfilInfo">Ocultar</button>
+<div class="editar-infos-div mt-3 mb-3" id="perfilInfo">
+{% if profile.bio %}
+    <p class="livro-text"><strong>Bio:</strong> {{ profile.bio }}</p>
+{% else %}
+    <p class="livro-text"><strong>Bio:</strong> Não Informado</p>
+{% endif %}
+
+{% if profile.bio %}
+    <p class="livro-text"><strong>Data de Nascimento:</strong> {{ profile.birth_date }}</p>
+{% else %}
+    <p class="livro-text"><strong>Data de Nascimento:</strong> Não Informado</p>
+{% endif %}
+
+{% if profile.avatar %}
+    <img class="user-avatar img-thumbnail mt-2 mb-3" src="{{ profile.avatar.url }}" alt="Avatar">
+{% else %}
+    <p class="livro-text">Nenhuma imagem de avatar disponível.</p>
+{% endif %}
+</div>
+
+<h2 class="text-default mt-4 mb-4">Livros Postados ({{ profile.user.livro_set.all|length }})</h2>
+<a type="button" class="mr-2 novo-livro" href="{% url 'adicionar_livro' %}">Adicionar Livro</a>
+<button class="ocultar-btn mr-2" id="toggleLivrosPostados">Ocultar</button>
+<div id="livros-container"></div>
+<button id="anterior">Anterior</button>
+<button class="mb-3" id="proximo">Próximo</button>
+
+<h2 class="text-default mt-4 mb-4">Comentários Postados ({{ comentarios|length }})</h2>
+<a type="button" class="mr-2 novo-livro" href="{% url 'adicionar_comentario_livro' %}">Adicionar Comentário</a>
+<button class="ocultar-btn mr-2" id="toggleComentariosPostados">Ocultar</button>
+<div id="comentarios-container"></div>
+<button id="anterior-comentarios">Anterior</button>
+<button class="mb-3" id="proximo-comentarios">Próximo</button>
+
+<h2 class="text-default mt-4 mb-4">Pensamentos Postados ({{ pensamentos|length }})</h2>
+<a type="button" class="mr-2 novo-livro" href="{% url 'adicionar_pensamento' %}">Adicionar Pensamento</a>
+<button class="ocultar-btn mr-2" id="togglePensamentosPostados">Ocultar</button>
+<div id="pensamentos-container"></div>
+<button id="anterior-pensamentos">Anterior</button>
+<button class="mb-3" id="proximo-pensamentos">Próximo</button>
+
+<h2 class="text-default mt-4 mb-4">Autores Cadastrados ({{ autores|length }})</h2>
+<a type="button" class="mr-2 novo-autor" href="{% url 'adicionar_autor' %}">Adicionar Autor</a>
+<button class="ocultar-btn mr-2" id="toggleAutoresPostados">Ocultar</button>
+<div id="autores-container"></div>
+<button id="anterior-autores">Anterior</button>
+<button class="mb-3" id="proximo-autores">Próximo</button>
+
+<h2 class="text-default mt-4 mb-4">Editoras Cadastradas ({{ editoras|length }})</h2>
+<a type="button" class="mr-2 nova-editora" href="{% url 'adicionar_editora' %}">Adicionar Editora</a>
+<button class="ocultar-btn mr-2" id="toggleEditorasPostadas">Ocultar</button>
+<div id="editoras-container"></div>
+<button id="anterior-editoras">Anterior</button>
+<button class="mb-3" id="proximo-editoras">Próximo</button>
+
+{% include '_modal_excluir_livro.html' %} 
+{% include '_modal_excluir_comentario.html' %} 
+{% include '_modal_excluir_pensamento.html' %} 
+{% include '_modal_excluir_autor.html' %} 
+{% include '_modal_excluir_editora.html' %} 
+
+<script type="text/javascript">
+$('#id_birth_date').datepicker({
+    dateFormat: 'dd-mm-yy', // Formato da data
+    changeMonth: true, // Permitir alteração do mês
+    changeYear: true, // Permitir alteração do ano
+    yearRange: '1900:2025' // Intervalo de anos permitidos
+});
+
+$('label[for="id_birth_date"]').text('Data de Nascimento');
+
+var livros = [
+    {% for livro in profile.user.livro_set.all %}
+        {
+            'id': {{ livro.id }},
+            'titulo': '{{ livro.titulo }}',
+            'autor': '{{ livro.autor }}',
+            'editora': '{{ livro.editora }}',
+            'data_publicacao': '{{ livro.data_publicacao }}',
+            'capa': '{{ livro.capa }}'
+        },
+    {% endfor %}
+];
+
+var livrosPorPagina = 5;
+var paginaAtual = 1;
+
+function exibirLivros() {
+    atualizarBotoes();
+    var inicio = (paginaAtual - 1) * livrosPorPagina;
+    var fim = paginaAtual * livrosPorPagina;
+    var livrosHTML = '';
+
+    for (var i = inicio; i < fim && i < livros.length; i++) {
+        livrosHTML += '<div class="livros-div livrosPostados">';
+        livrosHTML += '<a type="button" class="detalhes-autor mr-3" href="/livro/' + livros[i].id +'">Detalhes do Livro</a>';
+        livrosHTML += '<a type="button" class="editar-livro mr-3" href="/editar_livro/' + livros[i].id +'">Editar</a>';
+        livrosHTML += '<a type="button" class="excluir-livro" id="excluir-livro" data-livro-id="' + livros[i].id +'" data-livro-titulo="' + livros[i].titulo +'">Excluir</a>';
+        livrosHTML += '<p class="livro-text mt-4"><b>Título:</b> ' + livros[i].titulo + '</p>';
+        livrosHTML += '<img class="autor-picture img-thumbnail" src="/media/' + livros[i].capa + '" alt="Foto do Livro" class="autor-image">';
+        livrosHTML += '<p class="livro-text"><b>Autor:</b> ' + livros[i].autor + '</p>';
+        livrosHTML += '<p class="livro-text"><b>Editora:</b> ' + livros[i].editora + '</p>';
+        livrosHTML += '<p class="livro-text mb-0"><b>Data de Publicação:</b> ' + livros[i].data_publicacao + '</p>';
+        livrosHTML += '</div>';
+    }
+
+    document.getElementById('livros-container').innerHTML = livrosHTML;
+}
+
+exibirLivros();
+
+document.getElementById('anterior').addEventListener('click', function() {
+    if (paginaAtual > 1) {
+        paginaAtual--;
+        exibirLivros();
+        atualizarBotoes();
+    }
+});
+
+document.getElementById('proximo').addEventListener('click', function() {
+    var totalPages = Math.ceil(livros.length / livrosPorPagina);
+    if (paginaAtual < totalPages) {
+        paginaAtual++;
+        exibirLivros();
+        atualizarBotoes();
+    }
+});
+
+function atualizarBotoes() {
+    var totalPages = Math.ceil(livros.length / livrosPorPagina);
+    document.getElementById('anterior').disabled = paginaAtual === 1;
+    document.getElementById('proximo').disabled = paginaAtual === totalPages;
+}
+
+var comentarios = [
+    {% for comentario in comentarios %}
+        {
+            'id': {{ comentario.id }},
+            'texto': '{{ comentario.texto }}',
+            'data_postagem': '{{ comentario.data_publicacao }}',
+            'livro_id': '{{ comentario.livro.id }}',
+            'livro_titulo': '{{ comentario.livro.titulo }}'
+        },
+    {% endfor %}
+];
+
+var comentariosPorPagina = 5;
+var paginaAtualComentarios = 1;
+
+function exibirComentarios() {
+    atualizarBotoesComentarios();
+    var inicio = (paginaAtualComentarios - 1) * comentariosPorPagina;
+    var fim = paginaAtualComentarios * comentariosPorPagina;
+    var comentariosHTML = '';
+
+    for (var i = inicio; i < fim && i < comentarios.length; i++) {
+        comentariosHTML += '<div class="livros-div" id="comentariosPostados">';
+        comentariosHTML += '<a type="button" class="editar-comentario mr-3" href="/editar_comentario/' + comentarios[i].id + '/' + comentarios[i].livro_id + '">Editar</a>';
+        comentariosHTML += '<a type="button" class="excluir-comentario" id="excluir-comentario" data-livro-id="' + comentarios[i].livro_id +'" data-comentario-id="' + comentarios[i].id +'">Excluir</a>';
+        comentariosHTML += '<p class="livro-text mt-3"><b>Texto:</b> ' + comentarios[i].texto + '</p>';
+        comentariosHTML += '<p class="livro-text"><b>Data de Postagem:</b> ' + comentarios[i].data_postagem + '</p>';
+        comentariosHTML += '<p class="livro-text mb-0"><b>Livro:</b> <a href="/livro/' + comentarios[i].livro_id + '">' + comentarios[i].livro_titulo + '</a></p>';
+        comentariosHTML += '</div>';
+    }
+
+    document.getElementById('comentarios-container').innerHTML = comentariosHTML;
+}
+
+exibirComentarios();
+
+document.getElementById('anterior-comentarios').addEventListener('click', function() {
+    if (paginaAtualComentarios > 1) {
+        paginaAtualComentarios--;
+        exibirComentarios();
+        atualizarBotoesComentarios();
+    }
+});
+
+document.getElementById('proximo-comentarios').addEventListener('click', function() {
+    var totalPages = Math.ceil(comentarios.length / comentariosPorPagina);
+    if (paginaAtualComentarios < totalPages) {
+        paginaAtualComentarios++;
+        exibirComentarios();
+        atualizarBotoesComentarios();
+    }
+});
+
+function atualizarBotoesComentarios() {
+    var totalPages = Math.ceil(comentarios.length / comentariosPorPagina);
+    document.getElementById('anterior-comentarios').disabled = paginaAtualComentarios === 1;
+    document.getElementById('proximo-comentarios').disabled = paginaAtualComentarios === totalPages;
+}
+
+var pensamentos = [
+    {% for pensamento in pensamentos %}
+        {
+            'id': {{ pensamento.id }},
+            'texto': '{{ pensamento.texto }}',
+            'data_postagem': '{{ pensamento.data_criacao }}',
+            'autor_id': '{{ pensamento.autor.id }}'
+        },
+    {% endfor %}
+];
+
+var pensamentosPorPagina = 5;
+var paginaAtualPensamentos = 1;
+
+function exibirPensamentos() {
+    atualizarBotoesPensamentos();
+    var inicio = (paginaAtualPensamentos - 1) * pensamentosPorPagina;
+    var fim = paginaAtualPensamentos * pensamentosPorPagina;
+    var pensamentosHTML = '';
+
+    for (var i = inicio; i < fim && i < pensamentos.length; i++) {
+        pensamentosHTML += '<div class="livros-div pensamentosPostados">';
+        pensamentosHTML += '<a type="button" class="editar-pensamento mr-3" href="/editar_pensamento/' + pensamentos[i].id + '/' + pensamentos[i].autor_id + '">Editar</a>';
+        pensamentosHTML += '<a type="button" class="excluir-pensamento" id="excluir-pensamento" data-pensamento-id="' + pensamentos[i].id +'" data-autor-id="' + pensamentos[i].autor_id +'">Excluir</a>';
+        pensamentosHTML += '<p class="author-text mt-3"><b>Texto:</b> ' + pensamentos[i].texto + '</p>';
+        pensamentosHTML += '<p class="author-text mb-0"><b>Data de Postagem:</b> ' + pensamentos[i].data_postagem + '</p>';
+        pensamentosHTML += '</div>';
+    }
+
+    document.getElementById('pensamentos-container').innerHTML = pensamentosHTML;
+}
+
+exibirPensamentos();
+
+document.getElementById('anterior-pensamentos').addEventListener('click', function() {
+    if (paginaAtualPensamentos > 1) {
+        paginaAtualPensamentos--;
+        exibirPensamentos();
+        atualizarBotoesPensamentos();
+    }
+});
+
+document.getElementById('proximo-pensamentos').addEventListener('click', function() {
+    var totalPages = Math.ceil(pensamentos.length / pensamentosPorPagina);
+    if (paginaAtualPensamentos < totalPages) {
+        paginaAtualPensamentos++;
+        exibirPensamentos();
+        atualizarBotoesPensamentos();
+    }
+});
+
+function atualizarBotoesPensamentos() {
+    var totalPages = Math.ceil(pensamentos.length / pensamentosPorPagina);
+    document.getElementById('anterior-pensamentos').disabled = paginaAtualPensamentos === 1;
+    document.getElementById('proximo-pensamentos').disabled = paginaAtualPensamentos === totalPages;
+}
+
+var autores = [
+    {% for autor in autores %}
+        {
+            'id': {{ autor.id }},
+            'nome': '{{ autor.nome }}',
+            'biografia': '{{ autor.biografia }}',
+            'data_nascimento': '{{ autor.data_nascimento }}',
+            'foto': '{{ autor.foto }}',
+        },
+    {% endfor %}
+];
+
+var autoresPorPagina = 5;
+var paginaAtualAutores = 1;
+
+function exibirAutores() {
+    atualizarBotoesAutores();
+    var inicio = (paginaAtualAutores - 1) * autoresPorPagina;
+    var fim = paginaAtualAutores * autoresPorPagina;
+    var autoresHTML = '';
+
+    for (var i = inicio; i < fim && i < autores.length; i++) {
+        autoresHTML += '<div class="livros-div autoresCadastrados">';
+        autoresHTML += '<a type="button" class="detalhes-autor mr-3" href="/autor/' + autores[i].id +'">Detalhes do Autor</a>';
+        autoresHTML += '<a type="button" class="editar-autor mr-3" href="/editar_autor/' + autores[i].id +'">Editar</a>';
+        autoresHTML += '<a type="button" class="excluir-autor" id="excluir-autor" data-autor-id="' + autores[i].id +'" data-autor-nome="' + autores[i].nome + '">Excluir</a>';
+        autoresHTML += '<p class="author-text mt-4"><b>Nome:</b> ' + autores[i].nome + '</p>';
+        autoresHTML += '<p class="author-text"><b>Biografia:</b> ' + autores[i].biografia + '</p>';
+        autoresHTML += '<p class="author-text"><b>Data de Nascimento:</b> ' + autores[i].data_nascimento + '</p>';
+        autoresHTML += '<img class="autor-picture img-thumbnail" src="/media/' + autores[i].foto + '" alt="Foto do Autor" class="autor-image">';
+        autoresHTML += '</div>';
+    }
+
+    document.getElementById('autores-container').innerHTML = autoresHTML;
+}
+
+exibirAutores();
+
+document.getElementById('anterior-autores').addEventListener('click', function() {
+    if (paginaAtualAutores > 1) {
+        paginaAtualAutores--;
+        exibirAutores();
+        atualizarBotoesAutores();
+    }
+});
+
+document.getElementById('proximo-autores').addEventListener('click', function() {
+    var totalPages = Math.ceil(autores.length / autoresPorPagina);
+    if (paginaAtualAutores < totalPages) {
+        paginaAtualAutores++;
+        exibirAutores();
+        atualizarBotoesAutores();
+    }
+});
+
+function atualizarBotoesAutores() {
+    var totalPages = Math.ceil(autores.length / autoresPorPagina);
+    document.getElementById('anterior-autores').disabled = paginaAtualAutores === 1;
+    document.getElementById('proximo-autores').disabled = paginaAtualAutores === totalPages;
+}
+
+var editoras = [
+    {% for editora in editoras %}
+        {
+            'id': {{ editora.id }},
+            'nome': '{{ editora.nome }}',
+            'website': '{{ editora.website }}'
+        },
+    {% endfor %}
+];
+
+var editorasPorPagina = 5;
+var paginaAtualEditoras = 1;
+
+function exibirEditoras() {
+    atualizarBotoesEditoras();
+    var inicio = (paginaAtualEditoras - 1) * editorasPorPagina;
+    var fim = paginaAtualEditoras * editorasPorPagina;
+    var editorasHTML = '';
+
+    for (var i = inicio; i < fim && i < editoras.length; i++) {
+        editorasHTML += '<div class="livros-div editorasCadastradas">';
+        editorasHTML += '<a type="button" class="editar-editora mr-3" href="/editar_editora/' + editoras[i].id +'">Editar</a>';
+        editorasHTML += '<a type="button" class="excluir-editora" id="excluir-editora" data-editora-id="' + editoras[i].id +'" data-editora-nome="' + editoras[i].nome +'">Excluir</a>';
+        editorasHTML += '<p class="author-text mt-4"><b>Nome:</b> ' + editoras[i].nome + '</p>';
+        editorasHTML += '<p class="author-text mb-0"><b>Website:</b> <a href="' + editoras[i].website + '">' + editoras[i].website + '</a></p>';
+        editorasHTML += '</div>';
+    }
+
+    document.getElementById('editoras-container').innerHTML = editorasHTML;
+}
+
+exibirEditoras();
+
+document.getElementById('anterior-editoras').addEventListener('click', function() {
+    if (paginaAtualEditoras > 1) {
+        paginaAtualEditoras--;
+        exibirEditoras();
+        atualizarBotoesEditoras();
+    }
+});
+
+document.getElementById('proximo-editoras').addEventListener('click', function() {
+    var totalPages = Math.ceil(editoras.length / editorasPorPagina);
+    if (paginaAtualEditoras < totalPages) {
+        paginaAtualEditoras++;
+        exibirEditoras();
+        atualizarBotoesEditoras();
+    }
+});
+
+function atualizarBotoesEditoras() {
+    var totalPages = Math.ceil(editoras.length / editorasPorPagina);
+    document.getElementById('anterior-editoras').disabled = paginaAtualEditoras === 1;
+    document.getElementById('proximo-editoras').disabled = paginaAtualEditoras === totalPages;
+}
+
+$(document).ready(function() {
+    $('#search-input').on('input keyup', function(event) {
+        var query = $(this).val().trim();
+
+        if (query !== '') {
+            $.ajax({
+                url: '{% url "buscar_usuarios" %}',
+                data: {
+                    'query': query
+                },
+                success: function(data) {
+                    $('#usuario-suggestions').empty();
+
+                    $.each(data.usuarios, function(index, usuario) {
+                        var detalhesUrl = "{% url 'detalhes_usuario' user_id=0 %}".replace('0', usuario.id);
+                        $('#usuario-suggestions').append('<li><a href="' + detalhesUrl + '">' + usuario.username + '</a></li>');
+                    });
+
+                    if (!$('#usuario-suggestions').is(':empty')) {
+                        $('#usuario-suggestions').prepend('<li class="mt-2"><b>Sugestão de Usuários<b></li>');
+                    }
+                }
+            });
+        } else {
+            $('#usuario-suggestions').empty();
+        }
+    });
+
+    $('#search-input').on('keydown', function(event) {
+        if (event.key === 'Backspace') {
+            if ($(this).val().trim() === '') {
+                $('#usuario-suggestions').empty();
+            }
+        }
+    });
+});
+
+function addToggleFunction(elementId, contentId) {
+    var estadoElemento = localStorage.getItem(elementId);
+
+    if (estadoElemento === 'oculto') {
+        $('#' + contentId).hide();
+        $('#' + elementId).text('Mostrar');
+    }
+
+    $('#' + elementId).click(function() {
+        $('#' + contentId).toggle(function() {
+            var textoBotao = $(this).is(':visible') ? 'Ocultar' : 'Mostrar';
+            $('#' + elementId).text(textoBotao);
+
+            var estadoAtual = $(this).is(':visible') ? 'visivel' : 'oculto';
+            localStorage.setItem(elementId, estadoAtual);
+        });
+    });
+}
+
+$(document).ready(function() {
+    addToggleFunction('toggleSearchUsuario', 'searchUsuario');
+    addToggleFunction('toggleEditarPerfil', 'editarPerfil');
+    addToggleFunction('toggleUserInfo', 'userInfo');
+    addToggleFunction('togglePerfilInfo', 'perfilInfo');
+    addToggleFunction('toggleLivrosPostados', 'livros-container');
+    addToggleFunction('togglePensamentosPostados', 'pensamentos-container');
+    addToggleFunction('toggleComentariosPostados', 'comentarios-container');
+    addToggleFunction('toggleAutoresPostados', 'autores-container');
+    addToggleFunction('toggleEditorasPostadas', 'editoras-container');
+});
+</script>
+<script src="{% static 'js/modal_excluir_livro.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/modal_excluir_comentario.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/modal_excluir_pensamento.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/modal_excluir_autor.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/modal_excluir_editora.js' %}" type="text/javascript"></script>
+{% endblock %}
