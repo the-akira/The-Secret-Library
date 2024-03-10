@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Alterar Senha de {{ request.user.username }}{% endblock %}
 
 {% block content %}
 {% if messages %}
@@ -11,14 +11,13 @@
         </div>
     {% endfor %}
 {% endif %}
-<h1 class="text-default mt-4 mb-4">Login</h1>
+<h1 class="text-default mt-4 mb-4">Alterar Senha de {{ request.user.username }}</h1>
 
 <div class="editar-livro-div">
   <form id="editar-livro-form" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.as_p }}
-      <a style="float: left" class="mb-2" href="{% url 'redefinir_senha' %}">Recuperar Senha</a>
-      <button id="submit-btn" type="submit">Entrar</button>
+      <button id="submit-btn" type="submit">Realizar Alteração</button>
       <a href="{% url 'index' %}" id="cancel-btn" type="submit">Cancelar</a>
   </form>
 </div>

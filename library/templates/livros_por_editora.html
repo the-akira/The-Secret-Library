@@ -4,14 +4,6 @@
 {% block title %}Lista de Livros{% endblock %}
 
 {% block content %}
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-success mt-3" role="alert">
-            {{ message }}
-        </div>
-    {% endfor %}
-{% endif %}
-
 <h1 class="livros-title">Buscar Livro</h1>
 
 <!-- Formulário de pesquisa de livros -->
@@ -29,7 +21,7 @@
 </div>
 
 <!-- Lista de livros -->
-<h1 class="livros-title">Lista de Livros ({{ total }})</h1>
+<h1 class="livros-title">Lista de Livros de {{ editora.nome }} ({{ total }})</h1>
 
 <a type="button" class="mr-2 novo-livro" href="{% url 'adicionar_livro' %}">Adicionar Livro</a>
 
@@ -69,8 +61,6 @@
     <p class="livro-text"><b>Download:</b> <a href="{{ livro.link }}">Link</a></p>
     <p class="livro-text mb-2"><b>Postador por:</b> <a href="{% url 'detalhes_usuario' livro.usuario.id %}">{{ livro.usuario }}</a></p>
 </div>
-{% empty %}
-    <p>Nenhum livro cadastrado.</p>
 {% endfor %}
 
 <!-- Paginação -->

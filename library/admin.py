@@ -2,8 +2,9 @@ from django.contrib import admin
 from .models import (
     ComentarioLivro,
     ListaDesejos, 
-    Pensamento, 
+    Pensamento,
     Categoria, 
+    Mensagem,
     Editora, 
     Profile,
     Autor, 
@@ -45,6 +46,11 @@ class PensamentoAdmin(admin.ModelAdmin):
     list_filter = ('autor', 'data_criacao')
     search_fields = ('texto',)
 
+class MensagemAdmin(admin.ModelAdmin):
+    list_display = ('remetente', 'destinatario', 'assunto', 'timestamp')
+    list_filter = ('remetente', 'destinatario')
+    search_fields = ('assunto',)
+
 admin.site.register(Editora)
 admin.site.register(Categoria)
 admin.site.register(Livro, LivroAdmin)
@@ -52,4 +58,5 @@ admin.site.register(ComentarioLivro, ComentarioLivroAdmin)
 admin.site.register(ListaDesejos, ListaDesejosAdmin)
 admin.site.register(Autor, AutorAdmin)
 admin.site.register(Profile, ProfileAdmin)
+admin.site.register(Mensagem, MensagemAdmin)
 admin.site.register(Pensamento, PensamentoAdmin)

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Caixa de Saída{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success mt-3" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Lista de editoras -->
+<h1 class="livros-title">Caixa de Saída de {{ request.user.username }} ({{ mensagens_enviadas|length }})</h1>
+
+<!-- Iteração sobre as editoras -->
+{% for mensagem in mensagens %}
+<div class="livro-div">
+    <a type="button" class="excluir-mensagem" id="excluir-mensagem" data-mensagem-id="{{ mensagem.id }}" data-caixa-saida="saida">
+        Excluir
+    </a>
+    <p class="livro-text mt-4"><b>Destinatário:</b> <a href="{% url 'detalhes_usuario' mensagem.destinatario.id %}">{{ mensagem.destinatario }}</a></p>
+    <p class="livro-text"><b>Assunto:</b> {{ mensagem.assunto }}</p>
+    <p class="livro-text"><b>Corpo:</b> {{ mensagem.corpo }}</p>
+    <p class="livro-text mb-1"><b>Enviada em:</b> {{ mensagem.timestamp }}</p>
+</div>
+{% empty %}
+    <p>Não há mensagens em sua caixa de saída.</p>
+{% endfor %}
+
+<!-- Paginação -->
+<p class="mt-3">Página {{ mensagens.number }} de {{ mensagens.paginator.num_pages }}.</p>
+<div class="paginacao">
+    {% if mensagens.has_previous %}
+        <a href="?page=1">&laquo; Primeira</a>
+        <a href="?page={{ mensagens.previous_page_number }}">Anterior</a>
+    {% endif %}
+
+    {% for page_num in mensagens.paginator.page_range %}
+        {% if page_num == mensagens.number %}
+            <span class="current">{{ page_num }}</span>
+        {% elif page_num > mensagens.number|add:'-3' and page_num < mensagens.number|add:'3' %}  
+            <a href="?page={{ page_num }}">{{ page_num }}</a>     
+        {% endif %}
+    {% endfor %}
+
+    {% if mensagens.has_next %}
+        <a href="?page={{ mensagens.next_page_number }}">Próxima</a>
+        <a href="?page={{ mensagens.paginator.num_pages }}">Última &raquo;</a>
+    {% endif %}
+</div>
+
+{% include '_modal_excluir_mensagem.html' %}
+<script src="{% static 'js/modal_excluir_mensagem.js' %}" type="text/javascript"></script> 
+{% endblock %}

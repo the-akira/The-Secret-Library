@@ -44,7 +44,7 @@
     {% else %}
     {% endif %}
     <h2 class="text-default livro-title {% if editora.usuario.username == request.user.username %} mt-4 {% endif %} mb-4">
-        {{ editora.nome }}
+        <a href="{% url 'livros_por_editora' editora.id %}">{{ editora.nome }}</a>
     </h2>
     {% if editora.website %}
         <p class="livro-text mt-3 mb-0"><b>Website:</b> <a href="{{ editora.website }}">{{ editora.website }}</a></p>

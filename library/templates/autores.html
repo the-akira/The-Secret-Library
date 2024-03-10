@@ -34,6 +34,7 @@
 {% for autor in autores %}
 <div class="autor-div">
     <a type="button" class="mr-2 add-livro-autor" href="{% url 'adicionar_livro_autor' autor.id %}">Adicionar Livro</a>
+    <a type="button" class="mr-2 ver-livros-autor" href="{% url 'livros_por_autor' autor.id %}">Ver Livros</a>
     <a type="button" class="mr-2 detalhes-autor" href="{% url 'detalhes_autor' autor.id %}">Detalhes</a>
     {% if autor.usuario.username == request.user.username %}
         <a type="button" class="mr-2 editar-autor" href="{% url 'editar_autor' autor.id %}">Editar</a>
@@ -52,6 +53,8 @@
         <p class="author-text mb-0"><b>Data de Nascimento:</b> {{ autor.data_nascimento|date:"d/m/Y" }} </p>
     {% endif %}
 </div>
+{% empty %}
+    <p>Nenhum autor cadastrado.</p>
 {% endfor %}
 
 <p class="mt-3">Página {{ autores.number }} de {{ autores.paginator.num_pages }}.</p>

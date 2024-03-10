@@ -4,7 +4,12 @@
 {% block title %}Painel de Controle{% endblock %}
 
 {% block content %}
-<h2 class="text-default mt-4 mb-4">Informações do Usuário</h2>
+{% if request.user.username != usuario.username %}
+    <br>
+    <a class="novo-autor" href="{% url 'enviar_mensagem' usuario.id %}">Enviar Mensagem</a>
+{% else %}
+{% endif %}
+<h2 class="text-default mt-4 mb-4">Informações do Usuário {{ usuario.username }}</h2>
 <button class="ocultar-btn" id="toggleUserInfoUser">Ocultar</button>
 <div class="editar-infos-div mt-3 mb-3" id="userInfo">
 <p class="livro-text"><strong>Username:</strong> {{ usuario.username }}</p>
@@ -78,7 +83,9 @@ var livros = [
             'editora': '{{ livro.editora }}',
             'data_publicacao': '{{ livro.data_publicacao }}',
             'usuario': '{{ livro.usuario }}',
-            'capa': '{{ livro.capa }}'
+            'capa': '{{ livro.capa }}',
+            'editora_id': '{{ livro.editora.id }}',
+            'autor_id': '{{ livro.autor.id }}'
         },
     {% endfor %}
 ];
@@ -99,10 +106,14 @@ function exibirLivros() {
             livrosHTML += '<a type="button" class="editar-livro mr-3" href="/editar_livro/' + livros[i].id +'">Editar</a>';
             livrosHTML += '<a type="button" class="excluir-livro" id="excluir-livro" data-livro-id="' + livros[i].id +'" data-livro-titulo="' +livros[i].titulo +'">Excluir</a>';
         }
-        livrosHTML += '<p class="livro-text mt-4"><b>Título:</b> ' + livros[i].titulo + '</p>';
+        livrosHTML += '<p class="livro-text mt-4"><b>Título:</b> <a href="/livro/' + livros[i].id + '">' + livros[i].titulo + '</a></p>';
         livrosHTML += '<img class="autor-picture img-thumbnail" src="/media/' + livros[i].capa + '" alt="Foto do Livro" class="autor-image">';
-        livrosHTML += '<p class="livro-text"><b>Autor:</b> ' + livros[i].autor + '</p>';
-        livrosHTML += '<p class="livro-text"><b>Editora:</b> ' + livros[i].editora + '</p>';
+        livrosHTML += '<p class="livro-text"><b>Autor:</b> <a href="/autor/' + livros[i].autor_id + '">' + livros[i].autor + '</a></p>';
+
+        if (livros[i].editora_id) {
+            livrosHTML += '<p class="livro-text"><b>Editora:</b> <a href="/livros_por_editora/' + livros[i].editora_id + '">' + livros[i].editora + '</a></p>';
+        }
+
         livrosHTML += '<p class="livro-text mb-0"><b>Data de Publicação:</b> ' + livros[i].data_publicacao + '</p>';
         livrosHTML += '</div>';
     }
@@ -165,7 +176,7 @@ function exibirComentarios() {
         }
         comentariosHTML += '<p class="livro-text {% if usuario.username == request.user.username %} mt-3 {% endif %}"><b>Texto:</b> ' + comentarios[i].texto + '</p>';
         comentariosHTML += '<p class="livro-text"><b>Data de Postagem:</b> ' + comentarios[i].data_postagem + '</p>';
-        comentariosHTML += '<p class="livro-text mb-0"><b>Livro:</b> ' + comentarios[i].livro_titulo + '</p>';
+        comentariosHTML += '<p class="livro-text mb-0"><b>Livro:</b> <a href="/livro/' + comentarios[i].livro_id + '">' + comentarios[i].livro_titulo + '</a></p>';
         comentariosHTML += '</div>';
     }
 
@@ -204,7 +215,8 @@ var pensamentos = [
             'texto': '{{ pensamento.texto }}',
             'data_postagem': '{{ pensamento.data_criacao }}',
             'autor_id': '{{ pensamento.autor.id }}',
-            'usuario': '{{ pensamento.usuario }}'
+            'usuario': '{{ pensamento.usuario }}',
+            'autor_nome': '{{ pensamento.autor.nome }}'
         },
     {% endfor %}
 ];
@@ -225,7 +237,8 @@ function exibirPensamentos() {
             pensamentosHTML += '<a type="button" class="excluir-pensamento" id="excluir-pensamento" data-pensamento-id="' + pensamentos[i].id +'" data-autor-id="' + pensamentos[i].autor_id +'">Excluir</a>';
         }
         pensamentosHTML += '<p class="author-text {% if usuario.username == request.user.username %} mt-3 {% endif %}"><b>Texto:</b> ' + pensamentos[i].texto + '</p>';
-        pensamentosHTML += '<p class="author-text mb-0"><b>Data de Postagem:</b> ' + pensamentos[i].data_postagem + '</p>';
+        pensamentosHTML += '<p class="author-text"><b>Data de Postagem:</b> ' + pensamentos[i].data_postagem + '</p>';
+        pensamentosHTML += '<p class="author-text mb-0"><b>Autor:</b> <a href="/autor/' + pensamentos[i].autor_id + '">' + pensamentos[i].autor_nome + '</a></p>';
         pensamentosHTML += '</div>';
     }
 
@@ -281,12 +294,14 @@ function exibirAutores() {
 
     for (var i = inicio; i < fim && i < autores.length; i++) {
         autoresHTML += '<div class="livros-div autoresCadastrados">';
+        autoresHTML += '<a type="button" class="add-livro-autor mr-3" href="/adicionar_livro_autor/' + autores[i].id +'">Adicionar Livro</a>';
+        autoresHTML += '<a type="button" class="ver-livros-autor mr-3" href="/livros_por_autor/' + autores[i].id +'">Ver Livros</a>';
         autoresHTML += '<a type="button" class="detalhes-autor mr-3" href="/autor/' + autores[i].id +'">Detalhes do Autor</a>';
         if (autores[i].usuario === "{{ request.user.username }}") {
             autoresHTML += '<a type="button" class="editar-autor mr-3" href="/editar_autor/' + autores[i].id +'">Editar</a>';
             autoresHTML += '<a type="button" class="excluir-autor" id="excluir-autor" data-autor-id="' + autores[i].id +'" data-autor-nome="' + autores[i].nome + '">Excluir</a>';
         }
-        autoresHTML += '<p class="author-text mt-4"><b>Nome:</b> ' + autores[i].nome + '</p>';
+        autoresHTML += '<p class="author-text mt-4"><b>Nome:</b> <a href="/autor/' + autores[i].id + '">' + autores[i].nome + '</a></p>';
         autoresHTML += '<p class="author-text"><b>Biografia:</b> ' + autores[i].biografia + '</p>';
         autoresHTML += '<p class="author-text"><b>Data de Nascimento:</b> ' + autores[i].data_nascimento + '</p>';
         autoresHTML += '<img class="autor-picture img-thumbnail" src="/media/' + autores[i].foto + '" alt="Foto do Autor" class="autor-image">';
@@ -347,7 +362,7 @@ function exibirEditoras() {
             editorasHTML += '<a type="button" class="editar-editora mr-3" href="/editar_editora/' + editoras[i].id +'">Editar</a>';
             editorasHTML += '<a type="button" class="excluir-editora" id="excluir-editora" data-editora-id="' + editoras[i].id +'" data-editora-nome="' + editoras[i].nome +'">Excluir</a>';
         }
-        editorasHTML += '<p class="author-text {% if usuario.username == request.user.username %} mt-4 {% endif %}"><b>Nome:</b> ' + editoras[i].nome + '</p>';
+        editorasHTML += '<p class="author-text {% if usuario.username == request.user.username %} mt-4 {% endif %}"><b>Nome:</b> <a href="/livros_por_editora/' + editoras[i].id + '">' + editoras[i].nome + '</a></p>';
         editorasHTML += '<p class="author-text mb-0"><b>Website:</b> <a href="' + editoras[i].website + '">' + editoras[i].website + '</a></p>';
         editorasHTML += '</div>';
     }

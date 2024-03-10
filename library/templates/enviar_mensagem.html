@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Enviar mensagem para {{ destinatario }}{% endblock %}
 
 {% block content %}
 {% if messages %}
@@ -11,15 +11,14 @@
         </div>
     {% endfor %}
 {% endif %}
-<h1 class="text-default mt-4 mb-4">Login</h1>
+<h1 class="text-default mt-4 mb-4">Enviar mensagem para {{ destinatario }}</h1>
 
 <div class="editar-livro-div">
   <form id="editar-livro-form" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.as_p }}
-      <a style="float: left" class="mb-2" href="{% url 'redefinir_senha' %}">Recuperar Senha</a>
-      <button id="submit-btn" type="submit">Entrar</button>
-      <a href="{% url 'index' %}" id="cancel-btn" type="submit">Cancelar</a>
+      <button id="submit-btn" type="submit">Enviar</button>
+      <a href="{% url 'detalhes_usuario' destinatario.id %}" id="cancel-btn" type="submit">Cancelar</a>
   </form>
 </div>
 <br>

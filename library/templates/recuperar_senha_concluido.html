@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nova Senha Definida{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success mt-3" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+<h1 class="text-default mt-4 mb-4">Nova Senha Definida</h1>
+
+<div class="editar-livro-div">
+    <h1 class="livros-title">Redefinição de Senha Concluída</h1>
+    <p class="mb-4">Sua senha foi redefinida com sucesso.</p>
+    <p><a href="{% url 'login' %}" class="novo-livro">Fazer Login</a></p>
+</div>
+<br>
+{% endblock %}

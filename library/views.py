@@ -1,8 +1,9 @@
+from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm, PasswordResetForm
+from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.contrib import messages
@@ -12,8 +13,10 @@ from .forms import (
     LoginForm,
     ProfileForm,
     EditoraForm,
+    MensagemForm,
     PensamentoForm,
     LivroFormSemAutor,
+    MensagemUsersForm,
     ComentarioLivroForm,
     ComentarioLivrosForm,
     PensamentoAutoresForm,
@@ -24,8 +27,11 @@ from .models import (
     Livro,
     Profile,
     Editora,
+    Mensagem,
+    Categoria,
     Pensamento,
-    ComentarioLivro
+    ComentarioLivro,
+    MensagemEnviada,
 )
 
 def index(request):
@@ -86,6 +92,39 @@ def painel_controle(request):
         }
     )
 
+def alterar_senha(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Sua senha foi alterada com sucesso!')
+            return redirect('index')
+        else:
+            messages.error(request, 'Por favor, corrija os erros abaixo.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'alterar_senha.html', {
+        'form': form
+    })
+
+def redefinir_senha(request):
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            form.save(request=request)
+            messages.success(request, 'Um email com instruções para redefinir sua senha foi enviado.')
+            return redirect('login')
+    else:
+        form = PasswordResetForm()
+    return render(request, 'redefinir_senha.html', {'form': form})
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'recuperar_senha.html'
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'recuperar_senha_concluido.html'
+
 @login_required
 def detalhes_usuario(request, user_id):
     usuario = get_object_or_404(User, pk=user_id)
@@ -102,6 +141,113 @@ def detalhes_usuario(request, user_id):
             'pensamentos': pensamentos,
             'autores': autores,
             'editoras': editoras
+        }
+    )
+
+@login_required
+def enviar_mensagem(request, id_destinatario):
+    destinatario = get_object_or_404(User, pk=id_destinatario)
+    if request.method == 'POST':
+        form = MensagemForm(request.POST)
+        if form.is_valid():
+            mensagem = form.save(commit=False)
+            mensagem.remetente = request.user
+            mensagem.destinatario = destinatario
+            mensagem.save()
+
+            mensagem_enviada = MensagemEnviada.objects.create(
+                remetente=request.user,
+                destinatario=destinatario,
+                assunto=mensagem.assunto,
+                corpo=mensagem.corpo
+            )
+            messages.success(request, f'Mensagem enviada com sucesso para {destinatario}!')
+            return redirect('caixa_saida')
+    else:
+        form = MensagemForm()
+    return render(request, 'enviar_mensagem.html', {'form': form, 'destinatario': destinatario})
+
+@login_required
+def enviar_mensagem_usuarios(request):
+    if request.method == 'POST':
+        form = MensagemUsersForm(request.POST, user=request.user)
+        if form.is_valid():
+            destinatario = form.cleaned_data['destinatario']
+            destinatario = get_object_or_404(User, pk=destinatario.id)
+            mensagem = form.save(commit=False)
+            mensagem.remetente = request.user
+            mensagem.destinatario = destinatario
+            mensagem.save()
+
+            mensagem_enviada = MensagemEnviada.objects.create(
+                remetente=request.user,
+                destinatario=destinatario,
+                assunto=mensagem.assunto,
+                corpo=mensagem.corpo
+            )
+            messages.success(request, f'Mensagem enviada com sucesso para {destinatario}!')
+            return redirect('caixa_saida')
+    else:
+        form = MensagemUsersForm(user=request.user)
+    return render(request, 'enviar_mensagem_usuarios.html', {'form': form})
+
+@login_required
+def excluir_mensagem(request, mensagem_id):
+    mensagem = get_object_or_404(Mensagem, pk=mensagem_id)
+    if request.user == mensagem.destinatario:
+        mensagem.delete()
+        messages.success(request, 'Mensagem removida com sucesso.')
+    else:
+        messages.error(request, 'Você não tem permissão para excluir esta mensagem.')
+    return redirect('caixa_entrada')
+
+@login_required
+def excluir_mensagem_saida(request, mensagem_id):
+    mensagem = get_object_or_404(MensagemEnviada, pk=mensagem_id)
+    if request.user == mensagem.remetente:
+        mensagem.delete()
+        messages.success(request, 'Mensagem removida com sucesso.')
+    else:
+        messages.error(request, 'Você não tem permissão para excluir esta mensagem.')
+    return redirect('caixa_saida')
+
+@login_required
+def caixa_entrada(request):
+    mensagens_recebidas = Mensagem.objects.filter(destinatario=request.user).order_by('-timestamp')
+    paginator = Paginator(mensagens_recebidas, 5)
+
+    page = request.GET.get('page')
+    try:
+        mensagens_pagina = paginator.page(page)
+    except PageNotAnInteger:
+        mensagens_pagina = paginator.page(1)
+    except EmptyPage:
+        mensagens_pagina = paginator.page(paginator.num_pages)
+
+    return render(request, 'caixa_entrada.html', 
+        {
+            'mensagens': mensagens_pagina, 
+            'mensagens_recebidas': mensagens_recebidas
+        }
+    )
+
+@login_required
+def caixa_saida(request):
+    mensagens_enviadas = MensagemEnviada.objects.filter(remetente=request.user).order_by('-timestamp')
+    paginator = Paginator(mensagens_enviadas, 5) 
+
+    page = request.GET.get('page')
+    try:
+        mensagens_pagina = paginator.page(page)
+    except PageNotAnInteger:
+        mensagens_pagina = paginator.page(1)
+    except EmptyPage:
+        mensagens_pagina = paginator.page(paginator.num_pages)
+
+    return render(request, 'caixa_saida.html', 
+        {
+            'mensagens': mensagens_pagina, 
+            'mensagens_enviadas': mensagens_enviadas
         }
     )
 
@@ -303,6 +449,78 @@ def livros(request):
         livros = paginator.page(paginator.num_pages)
     
     return render(request, 'livros.html', {'livros': livros, 'query': query, 'total': len(livros_list)})
+
+@login_required
+def livros_por_editora(request, editora_id):
+    livros_list = Livro.objects.filter(editora_id=editora_id).order_by('titulo')
+    editora = get_object_or_404(Editora, pk=editora_id)
+
+    livros_por_pagina = 5
+    
+    paginator = Paginator(livros_list, livros_por_pagina)
+    page = request.GET.get('page')
+    try:
+        livros = paginator.page(page)
+    except PageNotAnInteger:
+        livros = paginator.page(1)
+    except EmptyPage:
+        livros = paginator.page(paginator.num_pages)
+    
+    return render(request, 'livros_por_editora.html', 
+        {
+            'livros': livros, 
+            'total': len(livros_list),
+            'editora': editora
+        }
+    )
+
+@login_required
+def livros_por_autor(request, autor_id):
+    livros_list = Livro.objects.filter(autor_id=autor_id).order_by('titulo')
+    autor = get_object_or_404(Autor, pk=autor_id)
+
+    livros_por_pagina = 5
+    
+    paginator = Paginator(livros_list, livros_por_pagina)
+    page = request.GET.get('page')
+    try:
+        livros = paginator.page(page)
+    except PageNotAnInteger:
+        livros = paginator.page(1)
+    except EmptyPage:
+        livros = paginator.page(paginator.num_pages)
+    
+    return render(request, 'livros_por_autor.html', 
+        {
+            'livros': livros, 
+            'total': len(livros_list),
+            'autor': autor
+        }
+    )
+
+@login_required
+def livros_por_categoria(request, categoria_id):
+    livros_list = Livro.objects.filter(categoria_id=categoria_id).order_by('titulo')
+    categoria = get_object_or_404(Categoria, pk=categoria_id)
+
+    livros_por_pagina = 5
+    
+    paginator = Paginator(livros_list, livros_por_pagina)
+    page = request.GET.get('page')
+    try:
+        livros = paginator.page(page)
+    except PageNotAnInteger:
+        livros = paginator.page(1)
+    except EmptyPage:
+        livros = paginator.page(paginator.num_pages)
+    
+    return render(request, 'livros_por_categoria.html', 
+        {
+            'livros': livros, 
+            'total': len(livros_list),
+            'categoria': categoria
+        }
+    )
 
 @login_required
 def buscar_livros(request):

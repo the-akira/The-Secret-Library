@@ -45,7 +45,7 @@ class Livro(models.Model):
     isbn = models.CharField(max_length=13, unique=True)
     capa = models.ImageField(upload_to='livros_covers/', blank=True, null=True, default='book.png')
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    link = models.URLField(max_length=350, null=True, blank=True)
+    link = models.URLField(max_length=350, null=True, blank=True, default='https://example.com')
     
     def __str__(self):
         return self.titulo
@@ -74,3 +74,24 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"Profile of {self.user.username}"
+
+class Mensagem(models.Model):
+    remetente = models.ForeignKey(User, related_name='mensagens_enviadas', on_delete=models.CASCADE)
+    destinatario = models.ForeignKey(User, related_name='mensagens_recebidas', on_delete=models.CASCADE)
+    assunto = models.CharField(max_length=255)
+    corpo = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    lida = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"De {self.remetente} para {self.destinatario} - {self.assunto}"
+
+class MensagemEnviada(models.Model):
+    remetente = models.ForeignKey(User, related_name='mensagens_enviadas_registro', on_delete=models.CASCADE)
+    destinatario = models.ForeignKey(User, related_name='mensagens_recebidas_registro', on_delete=models.CASCADE)
+    assunto = models.CharField(max_length=255)
+    corpo = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"De {self.remetente} para {self.destinatario} - {self.assunto}"

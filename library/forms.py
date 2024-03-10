@@ -6,6 +6,7 @@ from .models import (
     Livro, 
     Editora,
     Profile,
+    Mensagem,
     Pensamento,
     ComentarioLivro
 )
@@ -111,3 +112,34 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
+
+class MensagemForm(forms.ModelForm):
+    class Meta:
+        model = Mensagem
+        fields = ['assunto', 'corpo']
+        labels = {
+            'assunto': 'Assunto',
+            'corpo': 'Mensagem',
+        }
+        widgets = {
+            'corpo': forms.Textarea(attrs={'rows': 5}),
+        }
+
+class MensagemUsersForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(MensagemUsersForm, self).__init__(*args, **kwargs)
+        self.fields['destinatario'].queryset = User.objects.exclude(pk=user.pk)
+
+    destinatario = forms.ModelChoiceField(queryset=User.objects.all(), label='Destinatário')
+
+    class Meta:
+        model = Mensagem
+        fields = ['destinatario', 'assunto', 'corpo']
+        labels = {
+            'assunto': 'Assunto',
+            'corpo': 'Mensagem',
+        }
+        widgets = {
+            'corpo': forms.Textarea(attrs={'rows': 5}),
+        }
