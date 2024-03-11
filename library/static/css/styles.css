@@ -42,7 +42,9 @@ a {
 #anterior-autores,
 #proximo-autores,
 #anterior-editoras,
-#proximo-editoras {
+#proximo-editoras,
+#anterior-artes,
+#proximo-artes {
   text-decoration: none;
   border: 1px solid white;
   padding: 7px 10px;
@@ -101,7 +103,8 @@ a {
 #author-suggestions,
 #livro-suggestions,
 #editora-suggestions,
-#usuario-suggestions {
+#usuario-suggestions,
+#arte-suggestions {
   list-style-type: none;
   padding: 0;
   margin: 0;  
@@ -110,14 +113,16 @@ a {
 #author-suggestions > li:first-child,
 #livro-suggestions > li:first-child,
 #editora-suggestions > li:first-child,
-#usuario-suggestions > li:first-child {
+#usuario-suggestions > li:first-child,
+#arte-suggestions > li:first-child {
   margin-top: 10px;
 }
 
 #author-suggestions > li,
 #livro-suggestions > li,
 #editora-suggestions > li,
-#usuario-suggestions > li {
+#usuario-suggestions > li,
+#arte-suggestions > li {
   font-size: 1.7rem;
   font-family: "Luxurious Roman", serif;
   text-shadow: 1px 1px 1px #ffffff;   
@@ -153,7 +158,8 @@ hr {
 .editar-editora,
 .excluir-editora,
 .ver-livros-autor,
-.excluir-mensagem {
+.excluir-mensagem,
+.excluir-arte {
   background: #1d4569;
   color: white !important;
   border: 1px solid white;
@@ -166,7 +172,8 @@ hr {
 .excluir-livro,
 .excluir-comentario,
 .excluir-editora,
-.excluir-mensagem {
+.excluir-mensagem,
+.excluir-arte {
   background-color: #691d25;
 }
 
@@ -280,7 +287,8 @@ hr {
 #id_new_password2,
 #id_corpo,
 #id_assunto,
-#id_destinatario {
+#id_destinatario,
+#id_obra {
   width: 100%;
   font-size: 1.35rem;
   border-radius: 7px;
@@ -301,14 +309,16 @@ hr {
 
 #id_foto,
 #id_capa,
-#id_avatar {
+#id_avatar,
+#id_obra {
   height: 36px;
   background-color: white;
 }
 
 #id_foto:hover,
 #id_capa:hover,
-#id_avatar:hover {
+#id_avatar:hover,
+#id_obra:hover {
   cursor: pointer;
 }
 
@@ -350,7 +360,8 @@ label[for="id_new_password1"],
 label[for="id_new_password2"],
 label[for="id_assunto"],
 label[for="id_corpo"],
-label[for="id_destinatario"] {
+label[for="id_destinatario"],
+label[for="id_obra"] {
   font-size: 1.5rem;
   font-family: "Luxurious Roman", serif;
   font-weight: bold;
@@ -411,7 +422,9 @@ label[for=id_capa]:hover {
 #anterior-autores[disabled],
 #proximo-autores[disabled],
 #anterior-editoras[disabled],
-#proximo-editoras[disabled] {
+#proximo-editoras[disabled],
+#anterior-artes[disabled],
+#proximo-artes[disabled] {
   background-color: #290007;
 }
 
@@ -482,7 +495,8 @@ label[for=id_capa]:hover {
 .closeLivro,
 .closeComentario,
 .closeEditora,
-.closeMensagem {
+.closeMensagem,
+.closeArte {
   line-height: 0 !important;
   color: white !important;
   float: right;
@@ -498,7 +512,8 @@ label[for=id_capa]:hover {
 #confirmarExclusaoLivro,
 #confirmarExclusaoComentario,
 #confirmarExclusaoEditora,
-#confirmarExclusaoMensagem {
+#confirmarExclusaoMensagem,
+#confirmarExclusaoArte {
   width: 50%;
   margin-left: auto;
   margin-right: auto;

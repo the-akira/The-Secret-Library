@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.contrib import messages
 from .forms import (
+    ArteForm,
     AutorForm,
     LivroForm,
     LoginForm,
@@ -23,6 +24,7 @@ from .forms import (
     CustomUserCreationForm,
 )
 from .models import (
+    Arte,
     Autor,
     Livro,
     Profile,
@@ -74,6 +76,8 @@ def painel_controle(request):
     pensamentos = Pensamento.objects.filter(usuario=profile.user)
     autores = Autor.objects.filter(usuario=profile.user)
     editoras = Editora.objects.filter(usuario=profile.user)
+    artes = Arte.objects.filter(usuario=profile.user)
+    livros = Livro.objects.filter(usuario=profile.user)
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
@@ -88,7 +92,13 @@ def painel_controle(request):
             'comentarios': comentarios,
             'pensamentos': pensamentos,
             'autores': autores,
-            'editoras': editoras
+            'editoras': editoras,
+            'total_autores': len(autores),
+            'total_editoras': len(editoras),
+            'total_artes': len(artes),
+            'total_livros': len(livros),
+            'total_comentarios': len(comentarios),
+            'total_pensamentos': len(pensamentos)
         }
     )
 
@@ -733,3 +743,73 @@ def excluir_editora(request, editora_id):
     editora.delete()
     messages.success(request, f'A editora "{editora_nome}" foi excluída com sucesso.')
     return redirect('editoras')
+
+@login_required
+def artes(request):
+    artes_list = Arte.objects.all().order_by('titulo')
+    
+    query = request.GET.get('q')
+    if query:
+        artes_list = artes_list.filter(titulo__icontains=query)
+
+    artes_por_pagina = 5
+    
+    paginator = Paginator(artes_list, artes_por_pagina)
+    page = request.GET.get('page')
+    try:
+        artes = paginator.page(page)
+    except PageNotAnInteger:
+        artes = paginator.page(1)
+    except EmptyPage:
+        artes = paginator.page(paginator.num_pages)
+    
+    return render(request, 'artes.html', {'artes': artes, 'query': query, 'total': len(artes_list)})
+
+@login_required
+def buscar_artes(request):
+    query = request.GET.get('query', '')
+    artes = Arte.objects.filter(titulo__icontains=query)[:10] # Limita a 10 resultados
+    artes_data = [{'titulo': arte.titulo} for arte in artes]
+
+    return JsonResponse({'artes': artes_data})
+
+@login_required
+def adicionar_arte(request):
+    if request.method == 'POST':
+        form = ArteForm(request.POST, request.FILES)
+        if form.is_valid():
+            arte = form.save(commit=False)
+            arte.usuario = request.user
+            arte.save()
+            messages.success(request, f'Arte "{arte.titulo}" adicionada com sucesso!')
+            return redirect('artes')
+    else:
+        form = ArteForm()
+    return render(request, 'adicionar_arte.html', {'form': form})
+
+@login_required
+def editar_arte(request, arte_id):
+    arte = get_object_or_404(Arte, pk=arte_id)
+    if request.user != arte.usuario:
+        messages.error(request, 'Você não tem permissão para excluir esta arte.')
+        return redirect('artes')
+    if request.method == 'POST':
+        form = ArteForm(request.POST, request.FILES, instance=arte)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Obra {arte.titulo} alterada com sucesso!')
+            return redirect('artes')
+    else:
+        form = ArteForm(instance=arte)
+    return render(request, 'editar_arte.html', {'form': form, 'arte': arte})
+
+@login_required
+def excluir_arte(request, arte_id):
+    arte = get_object_or_404(Arte, pk=arte_id)
+    if request.user != arte.usuario:
+        messages.error(request, 'Você não tem permissão para excluir esta arte.')
+        return redirect('artes')
+    arte_titulo = arte.titulo 
+    arte.delete()
+    messages.success(request, f'A obra "{arte_titulo}" foi excluída com sucesso.')
+    return redirect('artes')

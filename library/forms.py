@@ -2,6 +2,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 from .models import (
+    Arte,
     Autor,
     Livro, 
     Editora,
@@ -14,6 +15,15 @@ from .models import (
 class LoginForm(forms.Form):
     username = forms.CharField(label='Nome de Usuário', max_length=100)
     password = forms.CharField(label='Senha', widget=forms.PasswordInput)
+
+class ArteForm(forms.ModelForm):
+    class Meta:
+        model = Arte
+        fields = ['titulo', 'obra']
+        widgets = {
+            'titulo': forms.TextInput(attrs={'placeholder': 'Título'}),
+        }
+
 
 class AutorForm(forms.ModelForm):
     data_nascimento = forms.DateField(

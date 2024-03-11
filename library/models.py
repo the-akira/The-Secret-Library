@@ -2,6 +2,15 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import models
 
+class Arte(models.Model):
+    titulo = models.CharField(max_length=100)
+    data_publicacao = models.DateTimeField(auto_now_add=True)
+    obra = models.ImageField(upload_to='artes/', blank=True, null=True, default='art.png')
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.titulo
+
 class Autor(models.Model):
     nome = models.CharField(max_length=100)
     biografia = models.TextField(blank=True, null=True)

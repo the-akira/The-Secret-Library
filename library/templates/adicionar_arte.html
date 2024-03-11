@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Adicionar Arte{% endblock %}
+
+{% block content %}
+<h1 class="text-default mt-4 mb-4">Adicionar Arte</h1>
+
+<div class="adicionar-editora-div">
+  <form id="editora-form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button id="submit-btn" type="submit">Salvar</button>
+      <a href="{% url 'artes' %}" id="cancel-btn" type="submit">Cancelar</a>
+  </form>
+</div>
+<br>
+
+<script>
+$(function() {
+  $('#editora-form').submit(function() {
+    $('#submit-btn').prop('disabled', true); // Desabilitar o botão
+
+    setTimeout(function() {
+        $('#submit-btn').prop('disabled', false); // Reabilitar o botão
+    }, 3000);
+  });
+});
+</script>
+{% endblock %}

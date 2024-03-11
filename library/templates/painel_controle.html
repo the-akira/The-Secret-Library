@@ -21,6 +21,17 @@
 <h2 class="text-default mt-4 mb-4">Alterar Senha</h2>
 <a type="button" class="mr-2 novo-livro" href="{% url 'alterar_senha' %}">Alterar</a>
 
+<h2 class="text-default mt-4 mb-4">Estatísticas</h2>
+<button class="ocultar-btn" id="toggleEstatisticas">Ocultar</button>
+<div class="livros-div" id="estatisticas">
+    <p class="livro-text"><b>Artes:</b> {{ total_artes }}</p>
+    <p class="livro-text"><b>Autores:</b> {{ total_autores }}</p>
+    <p class="livro-text"><b>Pensamentos:</b> {{ total_pensamentos }}</p>
+    <p class="livro-text"><b>Livros:</b> {{ total_livros }}</p>
+    <p class="livro-text"><b>Comentários:</b> {{ total_comentarios }}</p>
+    <p class="livro-text mb-0"><b>Editoras:</b> {{ total_editoras }}</p>
+</div>
+
 <h2 class="text-default mt-4 mb-4">Editar Perfil</h2>
 <button class="ocultar-btn" id="toggleEditarPerfil">Ocultar</button>
 <div class="editar-infos-div mt-4 mb-3" id="editarPerfil">
@@ -95,11 +106,19 @@
 <button id="anterior-editoras">Anterior</button>
 <button class="mb-3" id="proximo-editoras">Próximo</button>
 
+<h2 class="text-default mt-4 mb-4">Artes Postadas ({{ profile.user.arte_set.all|length }})</h2>
+<a type="button" class="mr-2 novo-autor" href="{% url 'adicionar_arte' %}">Adicionar Arte</a>
+<button class="ocultar-btn mr-2" id="toggleArtesPostadas">Ocultar</button>
+<div id="artes-container"></div>
+<button id="anterior-artes">Anterior</button>
+<button class="mb-3" id="proximo-artes">Próximo</button>
+
 {% include '_modal_excluir_livro.html' %} 
 {% include '_modal_excluir_comentario.html' %} 
 {% include '_modal_excluir_pensamento.html' %} 
 {% include '_modal_excluir_autor.html' %} 
-{% include '_modal_excluir_editora.html' %} 
+{% include '_modal_excluir_editora.html' %}
+{% include '_modal_excluir_arte.html' %} 
 
 <script type="text/javascript">
 $('#id_birth_date').datepicker({
@@ -479,6 +498,64 @@ function addToggleFunction(elementId, contentId) {
     });
 }
 
+var artes = [
+    {% for arte in profile.user.arte_set.all %}
+        {
+            'id': {{ arte.id }},
+            'titulo': '{{ arte.titulo }}',
+            'data_publicacao': '{{ arte.data_publicacao }}',
+            'obra': '{{ arte.obra }}'
+        },
+    {% endfor %}
+];
+
+var artesPorPagina = 5;
+var paginaAtualArtes = 1;
+
+function exibirArtes() {
+    atualizarBotoesArtes();
+    var inicio = (paginaAtualArtes - 1) * artesPorPagina;
+    var fim = paginaAtualArtes * artesPorPagina;
+    var artesHTML = '';
+
+    for (var i = inicio; i < fim && i < artes.length; i++) {
+        artesHTML += '<div class="livros-div artesPostadas">';
+        artesHTML += '<a type="button" class="editar-livro mr-3" href="/editar_arte/' + artes[i].id +'">Editar</a>';
+        artesHTML += '<a type="button" class="excluir-arte" id="excluir-arte" data-arte-id="' + artes[i].id +'" data-arte-titulo="' + artes[i].titulo +'">Excluir</a>';
+        artesHTML += '<p class="livro-text mt-4"><b>Título:</b> ' + artes[i].titulo + '</p>';
+        artesHTML += '<img class="livro-picture img-thumbnail" src="/media/' + artes[i].obra + '" alt="Foto da Arte" class="arte-image">';
+        artesHTML += '<p class="livro-text mb-0"><b>Data de Publicação:</b> ' + artes[i].data_publicacao + '</p>';
+        artesHTML += '</div>';
+    }
+
+    document.getElementById('artes-container').innerHTML = artesHTML;
+}
+
+exibirArtes();
+
+document.getElementById('anterior-artes').addEventListener('click', function() {
+    if (paginaAtualArtes > 1) {
+        paginaAtualArtes--;
+        exibirArtes();
+        atualizarBotoes();
+    }
+});
+
+document.getElementById('proximo-artes').addEventListener('click', function() {
+    var totalPages = Math.ceil(artes.length / artesPorPagina);
+    if (paginaAtualArtes < totalPages) {
+        paginaAtualArtes++;
+        exibirArtes();
+        atualizarBotoes();
+    }
+});
+
+function atualizarBotoesArtes() {
+    var totalPages = Math.ceil(artes.length / artesPorPagina);
+    document.getElementById('anterior-artes').disabled = paginaAtualArtes === 1;
+    document.getElementById('proximo-artes').disabled = paginaAtualArtes === totalPages;
+}
+
 $(document).ready(function() {
     addToggleFunction('toggleSearchUsuario', 'searchUsuario');
     addToggleFunction('toggleEditarPerfil', 'editarPerfil');
@@ -489,6 +566,8 @@ $(document).ready(function() {
     addToggleFunction('toggleComentariosPostados', 'comentarios-container');
     addToggleFunction('toggleAutoresPostados', 'autores-container');
     addToggleFunction('toggleEditorasPostadas', 'editoras-container');
+    addToggleFunction('toggleArtesPostadas', 'artes-container'),
+    addToggleFunction('toggleEstatisticas', 'estatisticas')
 });
 </script>
 <script src="{% static 'js/modal_excluir_livro.js' %}" type="text/javascript"></script>
@@ -496,4 +575,5 @@ $(document).ready(function() {
 <script src="{% static 'js/modal_excluir_pensamento.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/modal_excluir_autor.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/modal_excluir_editora.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/modal_excluir_arte.js' %}" type="text/javascript"></script>
 {% endblock %}

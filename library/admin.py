@@ -8,7 +8,8 @@ from .models import (
     Editora, 
     Profile,
     Autor, 
-    Livro, 
+    Livro,
+    Arte, 
 )
 
 class PensamentoInline(admin.TabularInline):
@@ -30,6 +31,11 @@ class ListaDesejosAdmin(admin.ModelAdmin):
 
     def livros_list(self, obj):
         return ", ".join([livro.titulo for livro in obj.livros.all()])
+
+class ArteAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'data_publicacao', 'usuario')
+    list_filter = ('data_publicacao', 'usuario')
+    search_fields = ('titulo',)
 
 class AutorAdmin(admin.ModelAdmin):
     list_display = ('nome', 'data_nascimento')
@@ -53,10 +59,11 @@ class MensagemAdmin(admin.ModelAdmin):
 
 admin.site.register(Editora)
 admin.site.register(Categoria)
-admin.site.register(Livro, LivroAdmin)
-admin.site.register(ComentarioLivro, ComentarioLivroAdmin)
-admin.site.register(ListaDesejos, ListaDesejosAdmin)
+admin.site.register(Arte, ArteAdmin)
 admin.site.register(Autor, AutorAdmin)
+admin.site.register(Livro, LivroAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Mensagem, MensagemAdmin)
 admin.site.register(Pensamento, PensamentoAdmin)
+admin.site.register(ListaDesejos, ListaDesejosAdmin)
+admin.site.register(ComentarioLivro, ComentarioLivroAdmin)

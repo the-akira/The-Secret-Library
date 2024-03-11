@@ -49,4 +49,9 @@ urlpatterns = [
     path('adicionar_editora/', views.adicionar_editora, name='adicionar_editora'),
     path('editar_editora/<int:editora_id>/', views.editar_editora, name='editar_editora'),
     path('editora/<int:editora_id>/excluir/', views.excluir_editora, name='excluir_editora'),
+    path('artes/', views.artes, name='artes'),
+    path('buscar_artes/', views.buscar_artes, name='buscar_artes'),
+    path('adicionar_arte/', views.adicionar_arte, name='adicionar_arte'),
+    path('editar_arte/<int:arte_id>', views.editar_arte, name='editar_arte'),
+    path('arte/<int:arte_id>/excluir/', views.excluir_arte, name='excluir_arte'),
 ]
