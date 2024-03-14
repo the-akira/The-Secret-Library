@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.contrib import messages
+from django.db.models import Count
 from .forms import (
     ArteForm,
     AutorForm,
@@ -813,3 +814,47 @@ def excluir_arte(request, arte_id):
     arte.delete()
     messages.success(request, f'A obra "{arte_titulo}" foi excluída com sucesso.')
     return redirect('artes')
+
+def dashboard(request):
+    autores = Autor.objects.annotate(num_livros=Count('livro'))
+    data_autores = [{'nome': autor.nome, 'num_livros': autor.num_livros} for autor in autores]
+
+    categorias = Categoria.objects.annotate(num_livros=Count('livro'))
+    data_categorias = [{'nome': categoria.nome, 'num_livros': categoria.num_livros} for categoria in categorias]
+
+    editoras = Editora.objects.annotate(num_livros=Count('livro'))
+    data_editoras = [{'nome': editora.nome, 'num_livros': editora.num_livros} for editora in editoras]
+
+    autores_pensamentos = Autor.objects.annotate(num_pensamentos=Count('pensamento'))
+    data_autores_pensamentos = [{'nome': autor.nome, 'num_pensamentos': autor.num_pensamentos} for autor in autores_pensamentos]
+
+    livros = Livro.objects.annotate(num_comentarios=Count('comentarios'))
+    data_livros_comentarios = [{'nome': livro.titulo, 'num_comentarios': livro.num_comentarios} for livro in livros]
+
+    livros_usuarios = User.objects.annotate(count=Count('livro'))
+    data_livros_usuarios = [{'nome': livro.username, 'count': livro.count} for livro in livros_usuarios]
+
+    autores_usuarios = User.objects.annotate(count=Count('autor'))
+    data_autores_usuarios = [{'nome': autor.username, 'count': autor.count} for autor in autores_usuarios]
+
+    pensamentos_usuarios = User.objects.annotate(count=Count('pensamento'))
+    data_pensamentos_usuarios = [{'nome': pensamento.username, 'count': pensamento.count} for pensamento in pensamentos_usuarios]
+
+    comentarios_usuarios = User.objects.annotate(count=Count('comentariolivro'))
+    data_comentarios_usuarios = [{'nome': comentario.username, 'count': comentario.count} for comentario in comentarios_usuarios]
+
+    artes_usuarios = User.objects.annotate(count=Count('arte'))
+    data_artes_usuarios = [{'nome': arte.username, 'count': arte.count} for arte in artes_usuarios]
+
+    return render(request, 'dashboard.html', {
+        'data_autores': data_autores,
+        'data_categorias': data_categorias,
+        'data_editoras': data_editoras,
+        'data_autores_pensamentos': data_autores_pensamentos,
+        'data_livros_comentarios': data_livros_comentarios,
+        'data_livros_usuarios': data_livros_usuarios,
+        'data_autores_usuarios': data_autores_usuarios,
+        'data_pensamentos_usuarios': data_pensamentos_usuarios,
+        'data_comentarios_usuarios': data_comentarios_usuarios,
+        'data_artes_usuarios': data_artes_usuarios
+    })

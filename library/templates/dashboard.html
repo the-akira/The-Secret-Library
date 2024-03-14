@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="text-default mt-4 mb-4">Dashboard</h1>
+
+<h2 class="text-default author-name mt-4">Selecione a Análise</h2>
+<select id="chartSelect">
+    <option value="autores">Livros por Autor</option>
+    <option value="categorias">Livros por Categoria</option>
+    <option value="editoras">Livros por Editora</option>
+    <option value="livros_usuarios">Livros por Usuário</option>
+    <option value="autores_usuarios">Autores por Usuário</option>
+    <option value="pensamentos_usuarios">Pensamentos por Usuário</option>
+    <option value="comentarios_usuarios">Comentários por Usuário</option>
+    <option value="artes_usuarios">Artes por Usuário</option>
+    <option value="autores_pensamentos">Pensamentos por Autor</option>
+    <option value="livros_comentarios">Comentários por Livro</option>
+</select>
+
+<canvas id="chartCanvas"></canvas>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    carregarGrafico('autores');
+});
+
+document.getElementById('chartSelect').addEventListener('change', function() {
+    var selectedChart = this.value;
+    carregarGrafico(selectedChart);
+});
+
+function carregarGrafico(tipo) {
+    var ctx = document.getElementById('chartCanvas').getContext('2d');
+    var data, labels, dataCount;
+
+    // Obter dados correspondentes ao tipo de gráfico selecionado
+    if (tipo === 'autores') {
+        data = {{ data_autores|safe }};
+    } else if (tipo === 'autores_pensamentos') {
+        data = {{ data_autores_pensamentos|safe }};
+    } else if (tipo === 'categorias') {
+        data = {{ data_categorias|safe }};
+    } else if (tipo === 'editoras') {
+        data = {{ data_editoras|safe }};
+    } else if (tipo === 'livros_comentarios') {
+        data = {{ data_livros_comentarios|safe }};
+    } else if (tipo === 'livros_usuarios') {
+        data = {{ data_livros_usuarios|safe }};
+    } else if (tipo === 'autores_usuarios') {
+        data = {{ data_autores_usuarios|safe }};
+    } else if (tipo === 'pensamentos_usuarios') {
+        data = {{ data_pensamentos_usuarios|safe }};
+    } else if (tipo === 'comentarios_usuarios') {
+        data = {{ data_comentarios_usuarios|safe }};
+    } else if (tipo === 'artes_usuarios') {
+        data = {{ data_artes_usuarios|safe }};
+    }
+
+    labels = data.map(function(item) { return item.nome; });
+    dataCount = data.map(function(item) { 
+        return item.num_livros || item.num_pensamentos || item.num_comentarios || item.count; 
+    });
+
+    // Configuração do gráfico
+    var config = {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Número de Livros',
+                data: dataCount,
+                backgroundColor: 'rgba(99, 12, 59, 0.7)',
+                borderColor: 'rgba(235, 235, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            plugins: {
+                legend: {
+                    display: false // Para remover a legenda
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#ebebeb',
+                        font: {
+                            size: 25,
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)' // Define a cor da grade do eixo x
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: '#ebebeb',
+                        font: {
+                            size: 20 // Ajusta o tamanho do texto do eixo Y
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    // Destruir gráfico anterior, se existir
+    if (window.chartInstance) {
+        window.chartInstance.destroy();
+    }
+
+    // Inicializar novo gráfico
+    window.chartInstance = new Chart(ctx, config);
+}
+</script>
+{% endblock %}

@@ -288,7 +288,8 @@ hr {
 #id_corpo,
 #id_assunto,
 #id_destinatario,
-#id_obra {
+#id_obra,
+#chartSelect {
   width: 100%;
   font-size: 1.35rem;
   border-radius: 7px;
@@ -542,6 +543,15 @@ label[for=id_capa]:hover {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #908d94;
+}
+
+#chartCanvas {
+  background-color: black;
+  border: 1px solid white;
+  border-radius: 14px;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  padding: 20px;
 }
 
 @media only screen and (max-width: 770px) {
