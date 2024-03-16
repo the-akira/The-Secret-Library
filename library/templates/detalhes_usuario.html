@@ -19,8 +19,18 @@
 <h2 class="text-default mt-4 mb-4">Informações do Perfil</h2>
 <button class="ocultar-btn" id="togglePerfilInfoUser">Ocultar</button>
 <div class="editar-infos-div mt-3 mb-3" id="perfilInfo">
-<p class="livro-text"><strong>Bio:</strong> {{ profile.bio }}</p>
-<p class="livro-text"><strong>Data de Nascimento:</strong> {{ profile.birth_date }}</p>
+{% if profile.bio %}
+    <p class="livro-text"><strong>Bio:</strong> {{ profile.bio }}</p>
+{% else %}
+    <p class="livro-text"><strong>Bio:</strong> Não Informado</p>
+{% endif %}
+
+{% if profile.birth_date  %}
+    <p class="livro-text"><strong>Data de Nascimento:</strong> {{ profile.birth_date }}</p>
+{% else %}
+    <p class="livro-text"><strong>Data de Nascimento:</strong> Não Informado</p>
+{% endif %}
+
 {% if profile.avatar %}
     <img class="user-avatar img-thumbnail mt-2 mb-3" src="{{ profile.avatar.url }}" alt="Avatar">
 {% else %}
