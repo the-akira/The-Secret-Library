@@ -44,7 +44,7 @@
     {% else %}
     {% endif %}
     <h2 class="text-default author-name mt-4"><a href="{% url 'detalhes_autor' autor.id %}">{{ autor.nome }}</a></h2>
-    <p class="author-text mt-4"><b>Biografia:</b> {{ autor.biografia }}</p>
+    <p class="author-text mt-4"><b>Biografia:</b> {{ autor.biografia|linebreaks }}</p>
     <p class="author-text"><b>Postador por:</b> <a href="{% url 'detalhes_usuario' autor.usuario.id %}">{{ autor.usuario }}</a></p>
     {% if autor.foto %}
         <img class="autor-picture img-thumbnail" src="{{ autor.foto.url }}" alt="{{ autor.nome }}">

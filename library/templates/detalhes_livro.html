@@ -32,7 +32,7 @@
     <p class="author-text">Autor: {{ livro.autor.nome }}</p>
     <p class="author-text">Editora: {{ livro.editora.nome }}</p>
     <p class="author-text">Categoria: {{ livro.categoria.nome }}</p>
-    <p class="author-text">Sinopse: {{ livro.sinopse }}</p>
+    <p class="author-text">Sinopse: {{ livro.sinopse|linebreaks }}</p>
     <p class="author-text">Data de Publicação: {{ livro.data_publicacao }}</p>
     <p class="author-text">ISBN: {{ livro.isbn }}</p>
     {% if livro.link %}

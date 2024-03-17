@@ -30,7 +30,7 @@
     {% if autor.foto %}
         <img class="autor-picture img-thumbnail" src="{{ autor.foto.url }}" alt="{{ autor.nome }}">
     {% endif %}
-    <p class="author-text">Biografia: {{ autor.biografia }}</p>
+    <p class="author-text">Biografia: {{ autor.biografia|linebreaks }}</p>
     <p class="author-text">Data de Nascimento: {{ autor.data_nascimento }}</p>
     <p class="author-text mb-1"><b>Postador por:</b> <a href="{% url 'detalhes_usuario' autor.usuario.id %}">{{ autor.usuario }}</a></p>
 </div>    

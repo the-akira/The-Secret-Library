@@ -2,11 +2,11 @@ document.querySelectorAll('#excluir-autor').forEach(button => {
     button.addEventListener('click', function() {
         const autorId = this.getAttribute('data-autor-id');
         const autorNome = this.getAttribute('data-autor-nome');
-        exibirModal(autorId, autorNome);
+        exibirModalAutor(autorId, autorNome);
     });
 });
 
-function exibirModal(autorId, autorNome) {
+function exibirModalAutor(autorId, autorNome) {
     const modal = document.getElementById('modalExcluirAutor');
     const autorRemover = document.getElementById('autorRemover');
     autorRemover.innerHTML = autorNome;
@@ -38,7 +38,7 @@ if (autoresContainer) {
         if (event.target.classList.contains('excluir-autor')) {
             const autorId = event.target.getAttribute('data-autor-id');
             const autorNome = event.target.getAttribute('data-autor-nome');
-            exibirModal(autorId, autorNome);
+            exibirModalAutor(autorId, autorNome);
         }
     });
 }

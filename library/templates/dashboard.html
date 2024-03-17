@@ -16,6 +16,7 @@
     <option value="pensamentos_usuarios">Pensamentos por Usuário</option>
     <option value="comentarios_usuarios">Comentários por Usuário</option>
     <option value="artes_usuarios">Artes por Usuário</option>
+    <option value="ideias_usuarios">Ideias por Usuário</option>
     <option value="autores_pensamentos">Pensamentos por Autor</option>
     <option value="livros_comentarios">Comentários por Livro</option>
 </select>
@@ -57,6 +58,8 @@ function carregarGrafico(tipo) {
         data = {{ data_comentarios_usuarios|safe }};
     } else if (tipo === 'artes_usuarios') {
         data = {{ data_artes_usuarios|safe }};
+    } else if (tipo === 'ideias_usuarios') {
+        data = {{ data_ideias_usuarios|safe }};
     }
 
     labels = data.map(function(item) { return item.nome; });

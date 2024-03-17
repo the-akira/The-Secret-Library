@@ -55,4 +55,9 @@ urlpatterns = [
     path('adicionar_arte/', views.adicionar_arte, name='adicionar_arte'),
     path('editar_arte/<int:arte_id>', views.editar_arte, name='editar_arte'),
     path('arte/<int:arte_id>/excluir/', views.excluir_arte, name='excluir_arte'),
+    path('ideias/', views.ideias, name='ideias'),
+    path('buscar_ideias/', views.buscar_ideias, name='buscar_ideias'),
+    path('adicionar_ideia/', views.adicionar_ideia, name='adicionar_ideia'),
+    path('editar_ideia/<int:ideia_id>', views.editar_ideia, name='editar_ideia'),
+    path('ideia/<int:ideia_id>/excluir/', views.excluir_ideia, name='excluir_ideia'),
 ]

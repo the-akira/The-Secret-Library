@@ -74,12 +74,19 @@
 <button id="anterior-artes">Anterior</button>
 <button class="mb-3" id="proximo-artes">Próximo</button>
 
+<h2 class="text-default mt-4 mb-4">Ideias Postadas ({{ profile.user.ideia_set.all|length }})</h2>
+<button class="ocultar-btn mr-2" id="toggleIdeiasPostadas">Ocultar</button>
+<div id="ideias-container"></div>
+<button id="anterior-ideias">Anterior</button>
+<button class="mb-3" id="proximo-ideias">Próximo</button>
+
 {% include '_modal_excluir_livro.html' %} 
 {% include '_modal_excluir_comentario.html' %}
 {% include '_modal_excluir_pensamento.html' %}
 {% include '_modal_excluir_autor.html' %} 
 {% include '_modal_excluir_editora.html' %}
-{% include '_modal_excluir_arte.html' %}  
+{% include '_modal_excluir_arte.html' %}
+{% include '_modal_excluir_ideia.html' %}   
 
 <script type="text/javascript">
 $('#id_birth_date').datepicker({
@@ -292,7 +299,7 @@ var autores = [
         {
             'id': {{ autor.id }},
             'nome': '{{ autor.nome }}',
-            'biografia': '{{ autor.biografia }}',
+            'biografia': '{{ autor.biografia|linebreaksbr }}',
             'data_nascimento': '{{ autor.data_nascimento }}',
             'foto': '{{ autor.foto }}',
             'usuario': '{{ autor.usuario }}'
@@ -440,7 +447,7 @@ function exibirArtes() {
             artesHTML += '<a type="button" class="excluir-arte" id="excluir-arte" data-arte-id="' + artes[i].id +'" data-arte-titulo="' + artes[i].titulo +'">Excluir</a>';
         }
         artesHTML += '<p class="livro-text {% if usuario.username == request.user.username %} mt-4 {% endif %}"><b>Título:</b> ' + artes[i].titulo + '</p>';
-        artesHTML += '<img class="livro-picture img-thumbnail" src="/media/' + artes[i].obra + '" alt="Foto da Arte" class="arte-image">';
+        artesHTML += '<img class="livro-picture img-thumbnail mb-4" src="/media/' + artes[i].obra + '" alt="Foto da Arte" class="arte-image">';
         artesHTML += '<p class="livro-text mb-0"><b>Data de Publicação:</b> ' + artes[i].data_publicacao + '</p>';
         artesHTML += '</div>';
     }
@@ -473,6 +480,65 @@ function atualizarBotoesArtes() {
     document.getElementById('proximo-artes').disabled = paginaAtualArtes === totalPages;
 }
 
+var ideias = [
+    {% for ideia in profile.user.ideia_set.all %}
+        {
+            'id': {{ ideia.id }},
+            'texto': '{{ ideia.texto|linebreaksbr }}',
+            'data_publicacao': '{{ ideia.data_publicacao }}',
+            'usuario': '{{ ideia.usuario }}'
+        },
+    {% endfor %}
+];
+
+var ideiasPorPagina = 5;
+var paginaAtualIdeias = 1;
+
+function exibirIdeias() {
+    atualizarBotoesIdeias();
+    var inicio = (paginaAtualIdeias - 1) * ideiasPorPagina;
+    var fim = paginaAtualIdeias * ideiasPorPagina;
+    var ideiasHTML = '';
+
+    for (var i = inicio; i < fim && i < ideias.length; i++) {
+        ideiasHTML += '<div class="livros-div">';
+        if (ideias[i].usuario === "{{ request.user.username }}") {
+            ideiasHTML += '<a type="button" class="editar-livro mr-3" href="/editar_ideia/' + ideias[i].id +'">Editar</a>';
+            ideiasHTML += '<a type="button" class="excluir-ideia" id="excluir-ideia" data-ideia-id="' + ideias[i].id +'">Excluir</a>';
+        }
+        ideiasHTML += '<p class="livro-text  {% if usuario.username == request.user.username %} mt-4 {% endif %}">' + ideias[i].texto + '</p>';
+        ideiasHTML += '<p class="livro-text mb-0"><b>Data de Publicação:</b> ' + ideias[i].data_publicacao + '</p>';
+        ideiasHTML += '</div>';
+    }
+
+    document.getElementById('ideias-container').innerHTML = ideiasHTML;
+}
+
+exibirIdeias();
+
+document.getElementById('anterior-ideias').addEventListener('click', function() {
+    if (paginaAtualIdeias > 1) {
+        paginaAtualIdeias--;
+        exibirIdeias();
+        atualizarBotoesIdeias();
+    }
+});
+
+document.getElementById('proximo-ideias').addEventListener('click', function() {
+    var totalPages = Math.ceil(ideias.length / ideiasPorPagina);
+    if (paginaAtualIdeias < totalPages) {
+        paginaAtualIdeias++;
+        exibirIdeias();
+        atualizarBotoesIdeias();
+    }
+});
+
+function atualizarBotoesIdeias() {
+    var totalPages = Math.ceil(ideias.length / ideiasPorPagina);
+    document.getElementById('anterior-ideias').disabled = paginaAtualIdeias === 1;
+    document.getElementById('proximo-ideias').disabled = paginaAtualIdeias === totalPages;
+}
+
 function addToggleFunction(elementId, contentId) {
     var estadoElemento = localStorage.getItem(elementId);
 
@@ -500,7 +566,8 @@ $(document).ready(function() {
     addToggleFunction('toggleComentariosPostadosUser', 'comentarios-container');
     addToggleFunction('toggleAutoresPostadosUser', 'autores-container');
     addToggleFunction('toggleEditorasPostadasUser', 'editoras-container');
-    addToggleFunction('toggleArtesPostadas', 'artes-container')
+    addToggleFunction('toggleArtesPostadas', 'artes-container');
+    addToggleFunction('toggleIdeiasPostadas', 'ideias-container');
 });
 </script>
 <script src="{% static 'js/modal_excluir_livro.js' %}" type="text/javascript"></script>
@@ -509,4 +576,5 @@ $(document).ready(function() {
 <script src="{% static 'js/modal_excluir_autor.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/modal_excluir_editora.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/modal_excluir_arte.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/modal_excluir_ideia.js' %}" type="text/javascript"></script>
 {% endblock %}

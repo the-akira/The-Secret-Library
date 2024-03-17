@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.db.models import Count
 from .forms import (
     ArteForm,
+    IdeiaForm,
     AutorForm,
     LivroForm,
     LoginForm,
@@ -26,6 +27,7 @@ from .forms import (
 )
 from .models import (
     Arte,
+    Ideia,
     Autor,
     Livro,
     Profile,
@@ -79,6 +81,7 @@ def painel_controle(request):
     editoras = Editora.objects.filter(usuario=profile.user)
     artes = Arte.objects.filter(usuario=profile.user)
     livros = Livro.objects.filter(usuario=profile.user)
+    ideias = Ideia.objects.filter(usuario=profile.user)
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
@@ -99,7 +102,8 @@ def painel_controle(request):
             'total_artes': len(artes),
             'total_livros': len(livros),
             'total_comentarios': len(comentarios),
-            'total_pensamentos': len(pensamentos)
+            'total_pensamentos': len(pensamentos),
+            'total_ideias': len(ideias)
         }
     )
 
@@ -815,6 +819,76 @@ def excluir_arte(request, arte_id):
     messages.success(request, f'A obra "{arte_titulo}" foi excluída com sucesso.')
     return redirect('artes')
 
+@login_required
+def ideias(request):
+    ideias_list = Ideia.objects.all().order_by('-data_publicacao')
+    
+    query = request.GET.get('q')
+    if query:
+        ideias_list = ideias_list.filter(texto__icontains=query)
+
+    ideias_por_pagina = 8
+    
+    paginator = Paginator(ideias_list, ideias_por_pagina)
+    page = request.GET.get('page')
+    try:
+        ideias = paginator.page(page)
+    except PageNotAnInteger:
+        ideias = paginator.page(1)
+    except EmptyPage:
+        ideias = paginator.page(paginator.num_pages)
+    
+    return render(request, 'ideias.html', {'ideias': ideias, 'query': query, 'total': len(ideias_list)})
+
+@login_required
+def buscar_ideias(request):
+    query = request.GET.get('query', '')
+    ideias = Ideia.objects.filter(texto__icontains=query)[:10] # Limita a 10 resultados
+    ideias_data = [{'texto': ideia.texto} for ideia in ideias]
+
+    return JsonResponse({'ideias': ideias_data})
+
+@login_required
+def adicionar_ideia(request):
+    if request.method == 'POST':
+        form = IdeiaForm(request.POST)
+        if form.is_valid():
+            ideia = form.save(commit=False)
+            ideia.usuario = request.user
+            ideia.save()
+            messages.success(request, f'Ideia "{ideia.id}" adicionada com sucesso!')
+            return redirect('ideias')
+    else:
+        form = IdeiaForm()
+    return render(request, 'adicionar_ideia.html', {'form': form})
+
+@login_required
+def editar_ideia(request, ideia_id):
+    ideia = get_object_or_404(Ideia, pk=ideia_id)
+    if request.user != ideia.usuario:
+        messages.error(request, 'Você não tem permissão para excluir esta ideia.')
+        return redirect('ideias')
+    if request.method == 'POST':
+        form = IdeiaForm(request.POST, instance=ideia)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Ideia {ideia.id} alterada com sucesso!')
+            return redirect('ideias')
+    else:
+        form = IdeiaForm(instance=ideia)
+    return render(request, 'editar_ideia.html', {'form': form, 'ideia': ideia})
+
+@login_required
+def excluir_ideia(request, ideia_id):
+    ideia = get_object_or_404(Ideia, pk=ideia_id)
+    if request.user != ideia.usuario:
+        messages.error(request, 'Você não tem permissão para excluir esta ideia.')
+        return redirect('ideias')
+    ideia_id = ideia.id 
+    ideia.delete()
+    messages.success(request, f'A ideia "{ideia_id}" foi excluída com sucesso.')
+    return redirect('ideias')
+
 def dashboard(request):
     autores = Autor.objects.annotate(num_livros=Count('livro'))
     data_autores = [{'nome': autor.nome, 'num_livros': autor.num_livros} for autor in autores]
@@ -846,6 +920,9 @@ def dashboard(request):
     artes_usuarios = User.objects.annotate(count=Count('arte'))
     data_artes_usuarios = [{'nome': arte.username, 'count': arte.count} for arte in artes_usuarios]
 
+    ideias_usuarios = User.objects.annotate(count=Count('ideia'))
+    data_ideias_usuarios = [{'nome': ideia.username, 'count': ideia.count} for ideia in ideias_usuarios]
+
     return render(request, 'dashboard.html', {
         'data_autores': data_autores,
         'data_categorias': data_categorias,
@@ -856,5 +933,6 @@ def dashboard(request):
         'data_autores_usuarios': data_autores_usuarios,
         'data_pensamentos_usuarios': data_pensamentos_usuarios,
         'data_comentarios_usuarios': data_comentarios_usuarios,
-        'data_artes_usuarios': data_artes_usuarios
+        'data_artes_usuarios': data_artes_usuarios,
+        'data_ideias_usuarios': data_ideias_usuarios
     })

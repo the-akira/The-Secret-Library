@@ -9,7 +9,8 @@ from .models import (
     Profile,
     Autor, 
     Livro,
-    Arte, 
+    Ideia, 
+    Arte,
 )
 
 class PensamentoInline(admin.TabularInline):
@@ -37,6 +38,11 @@ class ArteAdmin(admin.ModelAdmin):
     list_filter = ('data_publicacao', 'usuario')
     search_fields = ('titulo',)
 
+class IdeiaAdmin(admin.ModelAdmin):
+    list_display = ('id', 'texto', 'usuario')
+    list_filter = ('data_publicacao', 'usuario')
+    search_fields = ('texto',)
+
 class AutorAdmin(admin.ModelAdmin):
     list_display = ('nome', 'data_nascimento')
     search_fields = ('nome',)
@@ -60,6 +66,7 @@ class MensagemAdmin(admin.ModelAdmin):
 admin.site.register(Editora)
 admin.site.register(Categoria)
 admin.site.register(Arte, ArteAdmin)
+admin.site.register(Ideia, IdeiaAdmin)
 admin.site.register(Autor, AutorAdmin)
 admin.site.register(Livro, LivroAdmin)
 admin.site.register(Profile, ProfileAdmin)

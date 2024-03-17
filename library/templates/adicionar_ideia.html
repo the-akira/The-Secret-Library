@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Adicionar Ideia{% endblock %}
+
+{% block content %}
+<h1 class="text-default mt-4 mb-4">Adicionar Ideia</h1>
+
+<div class="adicionar-editora-div">
+  <form id="editora-form" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button id="submit-btn" type="submit">Salvar</button>
+      <a href="{% url 'ideias' %}" id="cancel-btn" type="submit">Cancelar</a>
+  </form>
+</div>
+<br>
+
+<script>
+$(function() {
+  $('#editora-form').submit(function() {
+    $('#submit-btn').prop('disabled', true); // Desabilitar o botão
+
+    setTimeout(function() {
+        $('#submit-btn').prop('disabled', false); // Reabilitar o botão
+    }, 3000);
+  });
+});
+</script>
+{% endblock %}

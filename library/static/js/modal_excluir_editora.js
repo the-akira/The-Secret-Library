@@ -2,11 +2,11 @@ document.querySelectorAll('#excluir-editora').forEach(button => {
     button.addEventListener('click', function() {
         const editoraId = this.getAttribute('data-editora-id');
         const editoraNome = this.getAttribute('data-editora-nome');
-        exibirModal(editoraId, editoraNome);
+        exibirModalEditora(editoraId, editoraNome);
     });
 });
 
-function exibirModal(editoraId, editoraNome) {
+function exibirModalEditora(editoraId, editoraNome) {
     const modal = document.getElementById('modalExcluirEditora');
     const editoraRemover = document.getElementById('editoraRemover');
     editoraRemover.innerHTML = editoraNome;
@@ -38,7 +38,7 @@ if (editorasContainer) {
         if (event.target.classList.contains('excluir-editora')) {
             const editoraId = event.target.getAttribute('data-editora-id');
             const editoraNome = event.target.getAttribute('data-editora-nome');
-            exibirModal(editoraId, editoraNome);
+            exibirModalEditora(editoraId, editoraNome);
         }
     });
 }

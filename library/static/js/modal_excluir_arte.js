@@ -2,11 +2,11 @@ document.querySelectorAll('#excluir-arte').forEach(button => {
     button.addEventListener('click', function() {
         const arteId = this.getAttribute('data-arte-id');
         const arteTitulo = this.getAttribute('data-arte-titulo');
-        exibirModal(arteId, arteTitulo);
+        exibirModalArte(arteId, arteTitulo);
     });
 });
 
-function exibirModal(arteId, arteTitulo) {
+function exibirModalArte(arteId, arteTitulo) {
     const modal = document.getElementById('modalExcluirArte');
     const arteRemover = document.getElementById('arteRemover');
     arteRemover.innerHTML = arteTitulo;
@@ -38,7 +38,7 @@ if (artesContainer) {
         if (event.target.classList.contains('excluir-arte')) {
             const arteId = event.target.getAttribute('data-arte-id');
             const arteTitulo = event.target.getAttribute('data-arte-titulo');
-            exibirModal(arteId, arteTitulo);
+            exibirModalArte(arteId, arteTitulo);
         }
     });
 }

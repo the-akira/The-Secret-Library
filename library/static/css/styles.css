@@ -44,7 +44,9 @@ a {
 #anterior-editoras,
 #proximo-editoras,
 #anterior-artes,
-#proximo-artes {
+#proximo-artes,
+#anterior-ideias,
+#proximo-ideias {
   text-decoration: none;
   border: 1px solid white;
   padding: 7px 10px;
@@ -104,7 +106,8 @@ a {
 #livro-suggestions,
 #editora-suggestions,
 #usuario-suggestions,
-#arte-suggestions {
+#arte-suggestions,
+#ideia-suggestions {
   list-style-type: none;
   padding: 0;
   margin: 0;  
@@ -114,7 +117,8 @@ a {
 #livro-suggestions > li:first-child,
 #editora-suggestions > li:first-child,
 #usuario-suggestions > li:first-child,
-#arte-suggestions > li:first-child {
+#arte-suggestions > li:first-child,
+#ideia-suggestions > li:first-child {
   margin-top: 10px;
 }
 
@@ -122,7 +126,8 @@ a {
 #livro-suggestions > li,
 #editora-suggestions > li,
 #usuario-suggestions > li,
-#arte-suggestions > li {
+#arte-suggestions > li,
+#ideia-suggestions > li {
   font-size: 1.7rem;
   font-family: "Luxurious Roman", serif;
   text-shadow: 1px 1px 1px #ffffff;   
@@ -159,7 +164,8 @@ hr {
 .excluir-editora,
 .ver-livros-autor,
 .excluir-mensagem,
-.excluir-arte {
+.excluir-arte,
+.excluir-ideia {
   background: #1d4569;
   color: white !important;
   border: 1px solid white;
@@ -173,7 +179,8 @@ hr {
 .excluir-comentario,
 .excluir-editora,
 .excluir-mensagem,
-.excluir-arte {
+.excluir-arte,
+.excluir-ideia {
   background-color: #691d25;
 }
 
@@ -227,7 +234,7 @@ hr {
 .adicionar-editora-div,
 .editar-editoar-div,
 .editar-infos-div {
-  padding: 20px;
+  padding: 20px 40px;
   margin-left: 20px;
   margin-right: 20px;
   border: 1px solid #908d94;
@@ -425,7 +432,9 @@ label[for=id_capa]:hover {
 #anterior-editoras[disabled],
 #proximo-editoras[disabled],
 #anterior-artes[disabled],
-#proximo-artes[disabled] {
+#proximo-artes[disabled],
+#anterior-ideias[disabled],
+#proximo-ideias[disabled] {
   background-color: #290007;
 }
 
@@ -497,7 +506,8 @@ label[for=id_capa]:hover {
 .closeComentario,
 .closeEditora,
 .closeMensagem,
-.closeArte {
+.closeArte,
+.closeIdeia {
   line-height: 0 !important;
   color: white !important;
   float: right;
@@ -514,7 +524,8 @@ label[for=id_capa]:hover {
 #confirmarExclusaoComentario,
 #confirmarExclusaoEditora,
 #confirmarExclusaoMensagem,
-#confirmarExclusaoArte {
+#confirmarExclusaoArte,
+#confirmarExclusaoIdeia {
   width: 50%;
   margin-left: auto;
   margin-right: auto;

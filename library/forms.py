@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django import forms
 from .models import (
     Arte,
+    Ideia,
     Autor,
     Livro, 
     Editora,
@@ -24,6 +25,13 @@ class ArteForm(forms.ModelForm):
             'titulo': forms.TextInput(attrs={'placeholder': 'Título'}),
         }
 
+class IdeiaForm(forms.ModelForm):
+    class Meta:
+        model = Ideia
+        fields = ['texto']
+        widgets = {
+            'texto': forms.Textarea(attrs={'placeholder': 'Texto'}),
+        }
 
 class AutorForm(forms.ModelForm):
     data_nascimento = forms.DateField(

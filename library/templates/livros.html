@@ -63,7 +63,7 @@
         </p>
     {% else %}
     {% endif %}
-    <p class="livro-text"><b>Sinopse:</b> {{ livro.sinopse }}</p>
+    <p class="livro-text"><b>Sinopse:</b> {{ livro.sinopse|linebreaks }}</p>
     <p class="livro-text"><b>Data de Publicação:</b> {{ livro.data_publicacao|date:"d/m/Y" }} </p>
     <p class="livro-text"><b>ISBN:</b> {{ livro.isbn }}</p>
     <p class="livro-text"><b>Download:</b> <a href="{{ livro.link }}">Link</a></p>

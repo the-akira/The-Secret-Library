@@ -15,7 +15,8 @@
 
 <div class="mb-4">
 	{% if request.user.is_authenticated %}
-		<a class="main-link" href="{% url 'artes' %}">Artes</a>
+		<a class="main-link" href="{% url 'ideias' %}">Ideias</a>
+		<a class="main-link mt-3" href="{% url 'artes' %}">Artes</a>
 		<a class="main-link mt-3" href="{% url 'autores' %}">Autores</a>
 		<a class="main-link mt-3" href="{% url 'livros' %}">Livros</a>
 		<a class="main-link mt-3" href="{% url 'editoras' %}">Editoras</a>

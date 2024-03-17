@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lista de Ideias{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success mt-3" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<h1 class="livros-title">Buscar Ideias</h1>
+
+<!-- Formulário de pesquisa de ideias -->
+<div class="pesquisar-editora-div">
+    <form method="GET" action="{% url 'ideias' %}">
+        <img class="mb-2" src="{% static 'images/eye.png' %}">
+        <h2 class="text-default mb-3">Digite uma palavra</h2>
+        <input id="search-input" type="text" name="q" value="" autocomplete="off" placeholder="Pesquisar...">
+        <button id="search-editora-btn" type="submit">Pesquisar</button>
+        {% if query %}
+            <p class="mt-3 mb-1" style="font-size: 1.21rem"><b>Último Termo Pesquisado:</b> {{ query }}</p>
+        {% endif %}
+        <ul id="ideia-suggestions"></ul>
+    </form>
+</div>
+
+<!-- Lista de ideias -->
+<h1 class="livros-title">Lista de Ideias ({{ total }})</h1>
+
+<a type="button" class="mr-2 nova-editora" href="{% url 'adicionar_ideia' %}">Adicionar Ideia</a>
+
+<!-- Iteração sobre as ideias -->
+{% for ideia in ideias %}
+<div class="livro-div">
+    {% if ideia.usuario.username == request.user.username %}
+        <a type="button" class="mr-2 editar-autor" href="{% url 'editar_ideia' ideia.id %}">Editar</a>
+        <a type="button" class="excluir-ideia" id="excluir-ideia" data-ideia-id="{{ ideia.id }}">
+            Excluir
+        </a>
+    {% else %}
+    {% endif %}
+    <h2 class="text-default mb-4 mt-4"><a href="{% url 'detalhes_usuario' ideia.usuario.id %}">{{ ideia.usuario }}</a></h2>
+    <img class="img-thumbnail mb-1" style="width: 90px" src="{{ ideia.usuario.profile.avatar.url }}">
+    <p class="livro-text livro-title mb-4">{{ ideia.texto|linebreaks }}</a></p>
+    <p class="livro-text mt-4 mb-0"><b>Data de Publicação:</b> {{ ideia.data_publicacao|date:"d/m/Y" }}</p>
+</div>
+{% endfor %}
+
+<!-- Paginação -->
+<p class="mt-3">Página {{ ideias.number }} de {{ ideias.paginator.num_pages }}.</p>
+<div class="paginacao">
+    {% if ideias.has_previous %}
+        <a href="?page=1">&laquo; Primeira</a>
+        <a href="?page={{ ideias.previous_page_number }}">Anterior</a>
+    {% endif %}
+
+    {% for page_num in ideias.paginator.page_range %}
+        {% if page_num == ideias.number %}
+            <span class="current">{{ page_num }}</span>
+        {% elif page_num > ideias.number|add:'-3' and page_num < ideias.number|add:'3' %}  
+            <a href="?page={{ page_num }}">{{ page_num }}</a>     
+        {% endif %}
+    {% endfor %}
+
+    {% if ideias.has_next %}
+        <a href="?page={{ ideias.next_page_number }}">Próxima</a>
+        <a href="?page={{ ideias.paginator.num_pages }}">Última &raquo;</a>
+    {% endif %}
+</div>
+
+{% include '_modal_excluir_ideia.html' %} 
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#search-input').on('input keyup', function(event) {
+        var query = $(this).val().trim();
+
+        if (query !== '') {
+            $.ajax({
+                url: '{% url "buscar_ideias" %}',
+                data: {
+                    'query': query
+                },
+                success: function(data) {
+                    $('#ideia-suggestions').empty();
+
+                    $.each(data.ideias, function(index, ideia) {
+                        $('#ideia-suggestions').append('<li>' + ideia.texto + '</li>');
+                    });
+
+                    if (!$('#ideia-suggestions').is(':empty')) {
+                        $('#ideia-suggestions').prepend('<li class="mt-2"><b>Sugestão de Arte<b></li>');
+                    }
+                }
+            });
+        } else {
+            $('#ideia-suggestions').empty();
+        }
+    });
+
+    $('#search-input').on('keydown', function(event) {
+        if (event.key === 'Backspace') {
+            if ($(this).val().trim() === '') {
+                $('#ideia-suggestions').empty();
+            }
+        }
+    });
+});
+</script>
+<script src="{% static 'js/modal_excluir_ideia.js' %}" type="text/javascript"></script>
+{% endblock %}
