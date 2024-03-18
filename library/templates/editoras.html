@@ -51,6 +51,8 @@
     {% endif %}
     <p class="livro-text mt-3 mb-0"><b>Postador por:</b> <a href="{% url 'detalhes_usuario' editora.usuario.id %}">{{ editora.usuario }}</a></p>
 </div>
+{% empty %}
+    <p class="mt-4">Nenhuma editora cadastrada.</p>
 {% endfor %}
 
 <!-- Paginação -->

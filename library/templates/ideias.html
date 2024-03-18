@@ -48,6 +48,8 @@
     <p class="livro-text livro-title mb-4">{{ ideia.texto|linebreaks }}</a></p>
     <p class="livro-text mt-4 mb-0"><b>Data de Publicação:</b> {{ ideia.data_publicacao|date:"d/m/Y" }}</p>
 </div>
+{% empty %}
+    <p class="mt-4">Nenhuma ideia registrada.</p>
 {% endfor %}
 
 <!-- Paginação -->

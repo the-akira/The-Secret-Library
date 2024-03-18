@@ -10,6 +10,7 @@
   <form id="editora-form" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.as_p }}
+      <div id="fileInfo" class="mb-2"></div>
       <button id="submit-btn" type="submit">Salvar</button>
       <a href="{% url 'artes' %}" id="cancel-btn" type="submit">Cancelar</a>
   </form>
@@ -25,6 +26,21 @@ $(function() {
         $('#submit-btn').prop('disabled', false); // Reabilitar o botão
     }, 3000);
   });
+});
+
+document.getElementById('id_obra').addEventListener('change', function(event) {
+    var file = event.target.files[0];
+
+    if (file) {
+        var fileSizeKB = file.size / 1024;
+
+        var fileInfo = '<b>Nome do arquivo:</b> ' + file.name + '<br>' +
+                       '<b>Tamanho do arquivo:</b> ' + fileSizeKB.toFixed(2) + ' KB';
+
+        document.getElementById('fileInfo').innerHTML = fileInfo;
+    } else {
+        document.getElementById('fileInfo').innerHTML = 'Nenhum arquivo selecionado';
+    }
 });
 </script>
 {% endblock %}

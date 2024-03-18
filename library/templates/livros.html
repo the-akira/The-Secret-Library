@@ -70,7 +70,7 @@
     <p class="livro-text mb-2"><b>Postador por:</b> <a href="{% url 'detalhes_usuario' livro.usuario.id %}">{{ livro.usuario }}</a></p>
 </div>
 {% empty %}
-    <p>Nenhum livro cadastrado.</p>
+    <p class="mt-4">Nenhum livro cadastrado.</p>
 {% endfor %}
 
 <!-- Paginação -->

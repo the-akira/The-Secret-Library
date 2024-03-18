@@ -48,6 +48,8 @@
     <p class="livro-text mt-2"><b>Data de Publicação:</b> {{ arte.data_publicacao|date:"d/m/Y" }}</p>
     <p class="livro-text mb-0"><b>Postador por:</b> <a href="{% url 'detalhes_usuario' arte.usuario.id %}">{{ arte.usuario }}</a></p>
 </div>
+{% empty %}
+    <p class="mt-4">Nenhuma obra registrada.</p>
 {% endfor %}
 
 <!-- Paginação -->

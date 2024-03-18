@@ -95,13 +95,13 @@
         </a>
     {% else %}
     {% endif %}
-    <p class="livro-text mt-3"><b>Título:</b> {{ livro.titulo }}</p>
+    <p class="livro-text mt-3"><b>Título:</b> <a href="{% url 'detalhes_livro' livro.id %}">{{ livro.titulo }}</a></p>
     {% if livro.capa %}
         <img class="livro-picture img-thumbnail" src="{{ livro.capa.url }}" alt="{{ livro.titulo }}">
     {% endif %}
-    <p class="livro-text"><b>Editora:</b> {{ livro.editora }}</p>
-    <p class="livro-text"><b>Categoria:</b> {{ livro.categoria }}</p>
-    <p class="livro-text"><b>Sinopse:</b> {{ livro.sinopse }}</p>
+    <p class="livro-text"><b>Editora:</b> <a href="{% url 'livros_por_editora' livro.editora.id %}">{{ livro.editora }}</a></p>
+    <p class="livro-text"><b>Categoria:</b> <a href="{% url 'livros_por_categoria' livro.categoria.id %}">{{ livro.categoria }}</a></p>
+    <p class="livro-text"><b>Sinopse:</b> {{ livro.sinopse|linebreaks }}</p>
     <p class="livro-text"><b>Data de Publicação:</b> {{ livro.data_publicacao|date:"d/m/Y" }} </p>
     <p class="livro-text"><b>ISBN:</b> {{ livro.isbn }}</p>
     <p class="livro-text"><b>Download:</b> <a href="{{ livro.link }}">Link</a></p>

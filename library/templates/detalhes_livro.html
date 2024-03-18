@@ -29,7 +29,7 @@
     {% if livro.capa %}
         <img class="livro-picture img-thumbnail" src="{{ livro.capa.url }}" alt="{{ livro.titulo }}">
     {% endif %}
-    <p class="author-text">Autor: {{ livro.autor.nome }}</p>
+    <p class="author-text">Autor: <a href="{% url 'detalhes_autor' livro.autor.id %}">{{ livro.autor.nome }}</a></p>
     <p class="author-text">Editora: {{ livro.editora.nome }}</p>
     <p class="author-text">Categoria: {{ livro.categoria.nome }}</p>
     <p class="author-text">Sinopse: {{ livro.sinopse|linebreaks }}</p>
