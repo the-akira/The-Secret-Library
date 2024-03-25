@@ -21,7 +21,9 @@
     <option value="livros_comentarios">Comentários por Livro</option>
 </select>
 
-<canvas id="chartCanvas"></canvas>
+<div id="wrapper">
+    <canvas id="chartCanvas"></canvas>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -67,6 +69,18 @@ function carregarGrafico(tipo) {
         return item.num_livros || item.num_pensamentos || item.num_comentarios || item.count; 
     });
 
+    // Calcular altura com base na quantidade de dados
+    var wrapper = document.getElementById('wrapper');
+    var dataLength = dataCount.length;
+    if (dataLength == 1) {
+        var suggestedHeight = dataLength * 400;
+    } else {
+        var suggestedHeight = dataLength * 50; // Ajuste conforme necessário
+    }
+
+    // Atualizar a altura do wrapper
+    wrapper.style.height = suggestedHeight + 'px';
+
     // Configuração do gráfico
     var config = {
         type: 'bar',
@@ -81,6 +95,7 @@ function carregarGrafico(tipo) {
             }]
         },
         options: {
+            maintainAspectRatio: false,
             indexAxis: 'y',
             plugins: {
                 legend: {
@@ -120,4 +135,5 @@ function carregarGrafico(tipo) {
     window.chartInstance = new Chart(ctx, config);
 }
 </script>
+
 {% endblock %}
