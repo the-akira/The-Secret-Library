@@ -72,8 +72,8 @@ function carregarGrafico(tipo) {
     // Calcular altura com base na quantidade de dados
     var wrapper = document.getElementById('wrapper');
     var dataLength = dataCount.length;
-    if (dataLength == 1) {
-        var suggestedHeight = dataLength * 400;
+    if (dataLength <= 4) {
+        var suggestedHeight = dataLength * 200;
     } else {
         var suggestedHeight = dataLength * 50; // Ajuste conforme necessário
     }
