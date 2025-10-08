@@ -42,26 +42,37 @@ function carregarGrafico(tipo) {
     // Obter dados correspondentes ao tipo de gráfico selecionado
     if (tipo === 'autores') {
         data = {{ data_autores|safe }};
+        datasetLabel = 'Número de Livros';
     } else if (tipo === 'autores_pensamentos') {
         data = {{ data_autores_pensamentos|safe }};
+        datasetLabel = 'Número de Pensamentos';
     } else if (tipo === 'categorias') {
         data = {{ data_categorias|safe }};
+        datasetLabel = 'Número de Livros';
     } else if (tipo === 'editoras') {
         data = {{ data_editoras|safe }};
+        datasetLabel = 'Número de Livros';
     } else if (tipo === 'livros_comentarios') {
         data = {{ data_livros_comentarios|safe }};
+        datasetLabel = 'Número de Comentários';
     } else if (tipo === 'livros_usuarios') {
         data = {{ data_livros_usuarios|safe }};
+        datasetLabel = 'Número de Livros';
     } else if (tipo === 'autores_usuarios') {
         data = {{ data_autores_usuarios|safe }};
+        datasetLabel = 'Número de Autores';
     } else if (tipo === 'pensamentos_usuarios') {
         data = {{ data_pensamentos_usuarios|safe }};
+        datasetLabel = 'Número de Pensamentos';
     } else if (tipo === 'comentarios_usuarios') {
         data = {{ data_comentarios_usuarios|safe }};
+        datasetLabel = 'Número de Comentários';
     } else if (tipo === 'artes_usuarios') {
         data = {{ data_artes_usuarios|safe }};
+        datasetLabel = 'Número de Artes';
     } else if (tipo === 'ideias_usuarios') {
         data = {{ data_ideias_usuarios|safe }};
+        datasetLabel = 'Número de Ideias';
     }
 
     labels = data.map(function(item) { return item.nome; });
@@ -87,7 +98,7 @@ function carregarGrafico(tipo) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Número de Livros',
+                label: datasetLabel,
                 data: dataCount,
                 backgroundColor: 'rgba(99, 12, 59, 0.7)',
                 borderColor: 'rgba(235, 235, 235, 1)',
